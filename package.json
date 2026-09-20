@@ -11,7 +11,7 @@
   },
   "bugs": "https://github.com/Kadihx/jev-x-kit/issues",
   "engines": {
-    "node": ">=18"
+    "node": ">=22.5.0"
   },
   "bin": {
     "jev": "dist/cli.js"
@@ -23,6 +23,7 @@
     ".claude-plugin"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
     "start": "node dist/index.js",
@@ -31,6 +32,7 @@
     "test:real": "node scripts/real-backend-test.mjs",
     "test:hub": "node --test \"tests/datacenter.test.mjs\"",
     "hub": "node dist/hub-cli.js",
+    "install-mcp": "node scripts/install-mcp.js",
     "test": "node --test \"tests/*.test.mjs\""
   },
   "keywords": [

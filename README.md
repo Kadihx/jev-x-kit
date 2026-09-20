@@ -1,7 +1,10 @@
 # jev-x-kit
 
+[![CI](https://github.com/Kadihx/jev-x-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Kadihx/jev-x-kit/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Node >=18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](tsconfig.json)
+[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io)
+[![Node >=22.5](https://img.shields.io/badge/node-%3E%3D22.5-brightgreen.svg)](package.json)
 [![Tests: 27/27](https://img.shields.io/badge/tests-27%2F27-brightgreen.svg)](tests)
 
 Universal **TypeSafe Jev / OpenJev** autonomous decision, deep research, ultra-planning & self-improving agent framework — packaged as a **Claude Code plugin/skill**, an **MCP server**, and a standalone **CLI**.
@@ -102,7 +105,7 @@ node dist/cli.js memory report
 node dist/cli.js features                                # 20 enterprise features
 ```
 
-## MCP tools (21)
+## MCP tools (24)
 
 | Tool | Module | What it does |
 |---|---|---|
@@ -127,6 +130,48 @@ node dist/cli.js features                                # 20 enterprise feature
 | `jev_pr_gate` | 10.16 | PR gatekeeper: secrets, breaking exports, leftovers |
 | `jev_features` | 10 | 20-feature catalog with honest status |
 | `jev_backend_info` | infra | Backend chain, pricing, policy, presets, paths |
+| `hub_crawl` | research | Politely crawl the 11-source personal-development knowledge base |
+| `hub_query` | research | FTS5 + Jev-ranked, cited answers from the crawled hub |
+| `hub_stats` | research | Doc counts / word counts per source |
+
+## One-click MCP install
+
+Instead of hand-editing `claude_desktop_config.json` / `.cursor/mcp.json` /
+`.continue/config.json`, run:
+
+```bash
+npm run install-mcp
+```
+
+`scripts/install-mcp.js` detects Claude Desktop, Cursor and Continue.dev on
+your machine, merges (never overwrites) a `jev-super-agent` entry into
+whichever config files exist, and backs up each original file to `<file>.bak`
+first.
+
+## How it works
+
+```mermaid
+flowchart LR
+    Q[Decision request] --> G{"BELKİ Gatekeeper<br/>confidence?"}
+    G -- "&gt; 0.85" --> E["Execute directly<br/>$0, no LLM call"]
+    G -- "0.60 – 0.85" --> S["Speculative fan-out<br/>N sub-decisions in parallel"]
+    G -- "&lt; 0.60" --> T["Escalate to System 2<br/>(planner / red-team)"]
+
+    subgraph Backend resolution
+        B1[typesafe_jev] -->|unreachable| B2[openjev_local]
+        B2 -->|unreachable| B3[laya_local]
+        B3 -->|unreachable| B4["heuristic<br/>(always available)"]
+    end
+
+    E -.-> B1
+    S -.-> B1
+    T -.-> B1
+```
+
+Every primitive call (`Choice` / `Score` / `Noul`) is schema-validated —
+never free text — and the backend chain always terminates in a deterministic
+offline simulator, so nothing ever fails closed even with no network, no GPU
+and no API key.
 
 ## Multi-domain presets (7)
 

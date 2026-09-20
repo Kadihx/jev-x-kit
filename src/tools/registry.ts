@@ -21,6 +21,7 @@ import { GithubMiner } from "../modules/github-miner.js";
 import { JevTrainingKit } from "../modules/jev-training-kit.js";
 import { SelfImprover } from "../modules/self-improver.js";
 import { ChiefOfStaff, ROLE_CATALOG } from "../modules/jev-dispatcher.js";
+import { CompetitorScanner } from "../modules/jev-competitor-scan.js";
 import {
   edgeCases,
   featureCatalog,
@@ -48,6 +49,7 @@ export interface AppContext {
   training: JevTrainingKit;
   improver: SelfImprover;
   dispatcher: ChiefOfStaff;
+  competitorScanner: CompetitorScanner;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -77,6 +79,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     training: new JevTrainingKit({ backend, concurrency: config.concurrency }),
     improver: new SelfImprover({ memoryPath: config.memoryPath }),
     dispatcher: new ChiefOfStaff({ backend, memoryPath: config.memoryPath, concurrency: config.concurrency }),
+    competitorScanner: new CompetitorScanner({ backend, llm, githubToken: config.githubToken }),
   };
 }
 
@@ -629,6 +632,30 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
         store.close();
       }
     },
+  });
+
+  tools.push({
+    name: "jev_competitor_scan",
+    title: "Competitor / market scan",
+    description:
+      "Search GitHub for repos created within a recent window that match a topic, rank each one against this project's own positioning with a Jev Noul fan-out ($0), and get a concrete 'closest rival + feature gaps + positioning move' synthesis. Use before a launch, or to spot newly-trending alternatives.",
+    inputSchema: schema(
+      {
+        query: stringProp("Topic/keywords to search GitHub repos for (e.g. \"claude code plugin agent\")."),
+        windowDays: numberProp("Only consider repos created within the last N days (default 2)."),
+        limit: numberProp("Max candidates to fetch from GitHub search (default 15, max 30)."),
+        ourRepo: stringProp("owner/name of our repo, for the report only (not fetched)."),
+        ourDescription: stringProp("Our project's positioning blurb (default: this repo's own README tagline)."),
+      },
+      ["query"],
+    ),
+    handler: async (args) =>
+      ctx.competitorScanner.scan(str(args, "query"), {
+        windowDays: numArg(args, "windowDays", 2),
+        limit: numArg(args, "limit", 15),
+        ourRepo: optStr(args, "ourRepo"),
+        ourDescription: optStr(args, "ourDescription"),
+      }),
   });
 
   tools.push({

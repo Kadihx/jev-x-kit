@@ -74,7 +74,17 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 21 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 24 });
+      return;
+
+    case "competitors":
+      print(
+        await ctx.competitorScanner.scan(positionals.join(" ") || flags.get("query") || "", {
+          windowDays: Number(flags.get("days") ?? 2),
+          limit: Number(flags.get("limit") ?? 15),
+          ourRepo: flags.get("repo"),
+        }),
+      );
       return;
 
     case "decide": {
@@ -170,7 +180,7 @@ async function main(): Promise<void> {
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors\n",
       );
       process.exitCode = command ? 1 : 0;
   }

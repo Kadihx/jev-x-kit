@@ -109,6 +109,30 @@ export interface ResearchBrief {
   latencyMs: number;
 }
 
+/* Module — Competitor / market scan --------------------------------------- */
+
+export interface CompetitorCandidate {
+  fullName: string;
+  url: string;
+  description: string;
+  stars: number;
+  language: string | null;
+  createdAt: string;
+  pushedAt: string;
+  /** Jev Noul "competes with us" relevance in [0, 1]. */
+  relevance: number;
+  tier: "VERIFIED" | "PROBABLE" | "REJECTED";
+}
+
+export interface CompetitorReport {
+  query: string;
+  windowDays: number;
+  ourRepo: string | null;
+  candidates: CompetitorCandidate[];
+  synthesis: { source: "llm" | "offline-fallback"; brief: string };
+  latencyMs: number;
+}
+
 export interface CompactionReport {
   keptLines: number;
   droppedLines: number;
