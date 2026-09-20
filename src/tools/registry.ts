@@ -28,11 +28,16 @@ import {
   rerank,
   sanitize,
 } from "../modules/enterprise-features.js";
+import { SOURCES, getSource, type SourceCategory } from "../datacenter/source-configs.js";
+import { crawlDatacenter } from "../datacenter/crawler.js";
+import { HubStore } from "../datacenter/store.js";
+import { queryHub } from "../datacenter/query.js";
 import type { JevRequest } from "../core/types.js";
 
 export interface AppContext {
   config: JevConfig;
   resolved: ResolvedBackend;
+  llm: System2Client;
   evaluator: JevEvaluator;
   planner: JevPlanner;
   redTeam: JevRedTeam;
@@ -54,6 +59,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
   return {
     config,
     resolved,
+    llm,
     evaluator: new JevEvaluator({ backend, policy: config.policy, memoryPath: config.memoryPath, concurrency: config.concurrency }),
     planner: new JevPlanner({ backend, llm, concurrency: config.concurrency }),
     redTeam: new JevRedTeam({ backend, llm, concurrency: config.concurrency }),
@@ -552,6 +558,77 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
     description: "List the 20 enterprise features with honest implemented/scaffolded status and their hosting tool.",
     inputSchema: schema({}),
     handler: async () => ({ features: featureCatalog(), roles: ROLE_CATALOG }),
+  });
+
+  tools.push({
+    name: "hub_crawl",
+    title: "Research hub crawler (personal-development knowledge base)",
+    description:
+      "Politely crawl the 11 curated sources (Farnam Street, LessWrong, Derek Sivers, Julian Shapiro, Internet Archive, Open Library, Project Gutenberg, Wikibooks, PhilArchive, PsyArXiv, CORE) into the local SQLite+FTS5 research hub. Respects robots.txt and each source's off-hours crawl window unless force=true.",
+    inputSchema: schema({
+      sources: arrayProp(`Source ids to limit the crawl to (default: all ${SOURCES.length}).`, { type: "string" }),
+      maxItems: numberProp("Max items to discover per source (default 12)."),
+      minWords: numberProp("Minimum word count to keep a fetched page (default 60)."),
+      force: booleanProp("Bypass the off-hours crawl window (default false)."),
+      dryRun: booleanProp("Preview robots.txt + discovery only, write nothing (default false)."),
+      dbPath: stringProp("Alternative SQLite path (default data/research-hub.sqlite)."),
+    }),
+    handler: async (args) => {
+      const ids = strArray(args, "sources");
+      const sources = ids.length ? ids.map((id) => getSource(id)) : SOURCES;
+      return crawlDatacenter(sources, {
+        maxItems: numArg(args, "maxItems", 12),
+        minWords: numArg(args, "minWords", 60),
+        force: boolArg(args, "force", false),
+        dryRun: boolArg(args, "dryRun", false),
+        dbPath: optStr(args, "dbPath"),
+        onlySources: ids.length ? ids : undefined,
+      });
+    },
+  });
+
+  tools.push({
+    name: "hub_query",
+    title: "Research hub query (rationality / cognitive-psychology / philosophy)",
+    description:
+      "FTS5 search over the crawled research hub, re-ranked by Jev Noul relevance into VERIFIED/PROBABLE/REJECTED tiers, then synthesized into a cited, step-by-step answer that grounds claims in mental models and cognitive-science findings over popular advice.",
+    inputSchema: schema(
+      {
+        query: stringProp("Study question."),
+        limit: numberProp("Candidate passages pulled from FTS5 (default 25)."),
+        topK: numberProp("Ranked passages kept for the answer (default 5)."),
+        category: { type: "string", enum: ["mental-models", "library", "academic"], description: "Restrict to one source category." },
+        dbPath: stringProp("Alternative SQLite path (default data/research-hub.sqlite)."),
+      },
+      ["query"],
+    ),
+    handler: async (args) => {
+      const store = new HubStore(optStr(args, "dbPath"));
+      try {
+        return await queryHub(str(args, "query"), { store, backend: ctx.resolved.backend, llm: ctx.llm }, {
+          limit: numArg(args, "limit", 25),
+          topK: numArg(args, "topK", 5),
+          category: optStr(args, "category") as SourceCategory | undefined,
+        });
+      } finally {
+        store.close();
+      }
+    },
+  });
+
+  tools.push({
+    name: "hub_stats",
+    title: "Research hub stats",
+    description: "Report document counts, word totals and last-crawl timestamps per source in the research hub.",
+    inputSchema: schema({ dbPath: stringProp("Alternative SQLite path (default data/research-hub.sqlite).") }),
+    handler: async (args) => {
+      const store = new HubStore(optStr(args, "dbPath"));
+      try {
+        return store.stats();
+      } finally {
+        store.close();
+      }
+    },
   });
 
   tools.push({

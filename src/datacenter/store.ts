@@ -138,7 +138,13 @@ export class HubStore {
 
   /** FTS5 search with BM25 ranking. */
   search(query: string, limit = 20, source?: string): StoredDocument[] {
-    const safe = query.replace(/["*^:()]/g, " ").trim();
+    const stripped = query.replace(/["*^:()-]/g, " ").trim();
+    if (!stripped) return [];
+    // Natural-language questions rarely contain every term in one document;
+    // OR the terms and let the Jev relevance re-rank (query.ts) do the real
+    // filtering instead of FTS5's implicit (too strict) AND-of-all-terms.
+    const terms = stripped.split(/\s+/).filter((t) => t.length > 1);
+    const safe = terms.length > 1 ? terms.join(" OR ") : stripped;
     if (!safe) return [];
     const base =
       "SELECT d.* FROM documents d JOIN documents_fts f ON d.id = f.rowid WHERE documents_fts MATCH ?";

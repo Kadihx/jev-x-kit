@@ -75,7 +75,7 @@ async function discoverHtml(source: SourceConfig, maxItems: number): Promise<Dis
     if (items.length >= maxItems) break;
     if (!page.startsWith("http")) continue;
     // JSON endpoints + sitemaps are handled by their own discoverers.
-    if (page.includes("format=json") || page.includes("osf.io") || page.includes("core.ac.uk") || page.includes("search.json")) continue;
+    if (page.includes("format=json") || page.includes("osf.io") || page.includes("core.ac.uk") || page.includes("search.json") || page.includes("advancedsearch.php")) continue;
     if (page.endsWith(".xml")) continue;
 
     try {
@@ -236,6 +236,33 @@ async function discoverOsf(source: SourceConfig, maxItems: number): Promise<Disc
   return items;
 }
 
+async function discoverArchive(source: SourceConfig, maxItems: number): Promise<DiscoveredItem[]> {
+  const items: DiscoveredItem[] = [];
+  for (const endpoint of source.discovery) {
+    if (items.length >= maxItems) break;
+    if (!endpoint.includes("advancedsearch.php")) continue;
+    try {
+      const result = await politeFetch(endpoint, source.policy);
+      if (result.status !== 200) continue;
+      const json = JSON.parse(result.body) as {
+        response?: { docs?: Array<{ identifier?: string; title?: string }> };
+      };
+      for (const doc of json.response?.docs ?? []) {
+        if (items.length >= maxItems) break;
+        if (!doc.identifier || !doc.title) continue;
+        items.push({
+          url: `https://archive.org/details/${doc.identifier}`,
+          title: cleanText(doc.title).slice(0, 300),
+          summary: "",
+        });
+      }
+    } catch {
+      /* best-effort */
+    }
+  }
+  return items;
+}
+
 async function discoverCore(source: SourceConfig, maxItems: number): Promise<DiscoveredItem[]> {
   // CORE v3 requires an API key for full search. Without a key we check the
   // endpoint shape and return an empty set with a logged reason.
@@ -270,6 +297,9 @@ export async function discover(source: SourceConfig, maxItems = 25): Promise<Dis
   }
   if (source.id === "psyarxiv" && collected.length < maxItems) {
     accept(await discoverOsf(source, maxItems));
+  }
+  if (source.id === "archive" && collected.length < maxItems) {
+    accept(await discoverArchive(source, maxItems));
   }
   if (source.id === "core" && collected.length < maxItems) {
     accept(await discoverCore(source, maxItems));
@@ -308,16 +338,30 @@ async function detailOpenLibrary(url: string): Promise<DetailItem | null> {
   }
 }
 
+/** Metadata-only sources (academic aggregators): no full-text fetch, no license
+ * risk — build the stored document directly from what discovery already has. */
+function detailMetadataOnly(source: SourceConfig, item: DiscoveredItem, minWords: number): DetailItem | null {
+  const content = cleanText(`${item.title}\n\n${item.summary}`.trim());
+  if (content.split(/\s+/).filter(Boolean).length < Math.min(minWords, 15)) return null;
+  return {
+    url: item.url,
+    title: item.title.slice(0, 300),
+    content,
+    contentHash: sha256(content),
+    license: `metadata-only (${source.name}; abstract/title only, no full text)`,
+    author: null,
+    published: null,
+    blockedLicense: false,
+  };
+}
+
 /** Fetch full detail for one discovered item (policy-gated upstream). */
 export async function detail(
   source: SourceConfig,
   item: DiscoveredItem,
   minWords = 60,
 ): Promise<DetailItem | null> {
-  if (!source.policy.allowFullContent) {
-    if (source.id === "openlibrary") return detailOpenLibrary(item.url);
-    return null;
-  }
   if (source.id === "openlibrary") return detailOpenLibrary(item.url);
+  if (!source.policy.allowFullContent) return detailMetadataOnly(source, item, minWords);
   return fetchDetail(source, item.url, minWords);
 }

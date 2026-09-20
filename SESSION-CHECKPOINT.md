@@ -90,24 +90,67 @@ Kullanıcının verdiği 11 kaynaklı araştırma-yönerge prompt'u için altyap
 - `tests/datacenter.test.mjs` — 7 çevrimdışı test (registry, pencere, robots,
   lisans, store/FTS, query tier'ları). **Şu an 7/7 yeşil.**
 
-## 2. Bundan Sonra Yapılacaklar (öncelik sırasıyla)
+## 2. GitHub'a yayınlandı (2026-09-20, ikinci oturum)
 
-1. **İlk gerçek crawl (gece penceresinde):**
-   `npm run hub -- crawl --max-items 12` (02:00–06:00 Berlin) veya gündüz test
-   için `--force`. Beklenen: ~11 kaynak × ~12 öğe ≈ 100+ belge, SQLite + FTS5.
-2. **Canlı query doğrulaması:** `npm run hub -- query "second-order thinking"`,
-   `... "habit formation dopamine"`, `... "stoic dichotomy of control"`;
-   Jev tier'larının (VERIFIED/PROBABLE/REJECTED) anlamlı dağıldığını kontrol et.
-3. **Kaynak adaptör sertleştirme:** fs.blog/LessWrong/Julian/PhilArchive/
-   Gutenberg/archive.org/Wikibooks/OSF/CORE için tek tek `--source <id>`
-   ile dry-run, seçici (selector) düzeltmeleri; CORE için API anahtarı kararı
-   (`CORE_API_KEY` env veya discovery-dışı bırakma).
-4. **MCP tool'larına bağlama:** `hub_crawl`, `hub_query`, `hub_stats` tool'larını
-   `src/tools/registry.ts`'e ekle (şu an sadece CLI var) + smoke test'e ekle.
-5. **Zamanlanmış gece crawl'u:** Windows Task Scheduler / cron ile
-   `node dist/hub-cli.js crawl` (02:30 Berlin) + `hub_stats` raporu.
-6. **Raporlama:** crawl metriklerini `.jev-skill-memory.json` RLVR döngüsüne
-   bağla (başarılı crawl = +1 reward, eşik oto-ayarı).
-7. **Opsiyonel:** `data/` klasörünün `.gitignore` durumunu netleştir (şu an
-   sqlite dosyası repoya girebilir; büyükse ignore'a ekle), README'ye
-   research-hub bölümünü yaz, `npm run hub` script açıklamasını ekle.
+Repo public: **https://github.com/Kadihx/jev-x-kit** (gh ile oluşturuldu + push edildi).
+
+- `.claude-plugin/plugin.json` + `skills/jev/SKILL.md` — repo artık doğrudan bir
+  **Claude Code plugin/skill** olarak kurulabiliyor (`jev-super-agent` MCP
+  server'ı otomatik kaydediyor), sadece MCP server + CLI değil.
+- `package.json` → ad `jev-x-kit`, bin `jev`, repository/homepage/bugs alanları.
+- `CLAUDE.md` (yeni) — kullanıcının verdiği araştırma yönergesini (fs.blog,
+  LessWrong, Sivers, Julian, Internet Archive/Open Library, Gutenberg,
+  Wikibooks, PhilArchive, PsyArXiv, CORE + "rasyonel modelleri popüler
+  tavsiyeye tercih et, doğrudan atıf yap, adım adım mantık kur" çalışma
+  yönergesi) kalıcı proje kuralı olarak yazılı hale getirdi.
+
+## 3. Research Hub sertleştirme + ilk gerçek crawl (bu oturum)
+
+- **MCP bağlantısı (TODO #4 tamam):** `hub_crawl`, `hub_query`, `hub_stats`
+  `src/tools/registry.ts`'e eklendi (21 → **24 tool**). `AppContext`'e `llm`
+  eklendi ki hub_query aynı çözülmüş backend'i tekrar-resolve etmeden kullansın.
+- **Gerçek bug'lar bulundu ve düzeltildi** (canlı crawl + query testiyle):
+  - `source-adapters.ts`: `allowFullContent:false` kaynaklarda (`psyarxiv`,
+    `philarchive`) `detail()` her zaman `null` dönüyordu (sadece `openlibrary`
+    özel-durumu vardı) → generic `detailMetadataOnly()` eklendi, ekstra fetch
+    olmadan discovery'deki title+summary'den doküman üretiyor.
+  - `archive` (Internet Archive) JSON `advancedsearch.php` yanıtı hiç
+    parse edilmiyordu (generic HTML kart-scraper `content-type` html değil
+    diye atlıyordu) → özel `discoverArchive()` eklendi (`response.docs[]`).
+  - `store.ts` FTS5 `search()`: `"second-order thinking"` gibi tireli sorgular
+    `no such column: order` hatasıyla çöküyordu (tire FTS5'te NOT operatörü) →
+    tire de sanitize edilen karakterlere eklendi; ayrıca çok-terimli sorgular
+    artık `OR` ile birleştiriliyor (önceki örtük `AND` neredeyse hiçbir doğal
+    dil sorusuyla eşleşmiyordu — "habit formation dopamine" 0 sonuç veriyordu).
+- **İlk gerçek crawl çalıştırıldı** (gündüz, `--force`, Berlin penceresi dışı):
+  **105 belge**, 8/11 kaynak canlı: `sivers`(15) `julian`(15) `gutenberg`(15)
+  `fs-blog`(15) `wikibooks`(14) `archive`(14) `psyarxiv`(15) `openlibrary`(2).
+  `data/research-hub.sqlite` yerelde duruyor (repoya girmiyor, `.gitignore`
+  zaten `data/*.sqlite*`'ı hariç tutuyor — kasıtlı: veri seti çalışma-zamanı
+  verisi, kaynak kodu değil).
+- **Bilinen açık kalan 3 kaynak** (kod hatası değil, dış engel):
+  `lesswrong` (site artık Next.js SPA, statik `/sitemap.xml` yok — GraphQL API
+  reverse-engineering gerekir), `philarchive` (WAF 403, bot engelleniyor),
+  `core` (v3 API anahtarı gerektiriyor — `CORE_API_KEY` kararı bekliyor).
+- **Uçtan uca doğrulama:** `qwen2.5:3b` (Ollama, yerelde açık) ile
+  `stoic dichotomy of control` sorgusu → cevap kullanıcının yönergesindeki
+  formatı birebir izledi: *core model → evidence [source-id] → concrete
+  steps*. Retrieval kalitesi küçük korpus (105 belge) + heuristic Noul skorlayıcı
+  ile gürültülü; gerçek kalite için Noul primitive'lerinin de bir System-2
+  backend'e bağlanması (şu an sadece final sentez `System2Client`/Ollama
+  kullanıyor, alaka skorlaması hâlâ `heuristic`) gerekir.
+
+## 4. Bundan sonra kalanlar (öncelik sırasıyla)
+
+1. **Retrieval kalitesi:** Noul relevance skorlamasını da gerçek bir backend'e
+   bağla (şu an sadece cevap sentezi LLM kullanıyor) veya korpusu büyüt.
+2. **lesswrong/philarchive/core:** GraphQL/WAF-bypass/API-anahtarı kararları —
+   düşük öncelik, dış kaynaklı engeller.
+3. **Zamanlanmış gece crawl'u:** Windows Task Scheduler ile
+   `node dist/hub-cli.js crawl` (02:30 Berlin, **force olmadan** — psyarxiv'in
+   OSF endpoint'i robots.txt tarafından reddediliyor, bu yüzden zamanlanmış
+   (force'suz) koşularda psyarxiv atlanacak; bu kasıtlı ve nazik davranış).
+4. **RLVR bağlantısı:** crawl metriklerini `.jev-skill-memory.json` döngüsüne
+   bağla (başarılı crawl = +1 reward).
+5. **Smoke test:** `hub_crawl`/`hub_query`/`hub_stats`'ı `scripts/smoke-test.mjs`'e
+   ekle (şimdilik sadece CLI + manuel canlı testle doğrulandı).
