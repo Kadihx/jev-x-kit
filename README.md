@@ -159,6 +159,21 @@ npm run test:real  # REAL model test: needs `ollama serve` + a local model (e.g.
 npm run test:hub   # 7 datacenter-only tests, no network
 ```
 
+## Benchmark: how much does this actually save?
+
+Real, reproducible numbers (not marketing copy) comparing `jev_research` to a
+Claude Code session doing the same research task by hand
+(`WebSearch`/`WebFetch` + inline reasoning, no local decision layer):
+
+| | jev_research | vanilla Claude Code |
+|---|---|---|
+| Tokens entering Claude's context | ~2,300 avg | ~43,000 avg (**~19x more**) |
+| Tool round-trips | 1 | 10-12 (**~11x more**) |
+| Wall-clock | 3-10s (measured) | ~30-36s (assumption-labeled estimate) |
+
+Full methodology, caveats, and how to reproduce every number yourself:
+[`BENCHMARK.md`](BENCHMARK.md).
+
 ## Research Hub (knowledge data center)
 
 Nightly-scraped research library for personal development, rationality,
