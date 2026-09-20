@@ -35,10 +35,18 @@ const DEFAULT_OUR_DESCRIPTION =
   "a confidence gatekeeper, ultra-planning, red-teaming, 4-channel research and " +
   "RLVR self-improvement, packaged as an MCP server + CLI + Claude Code plugin/skill.";
 
-async function searchGithub(query: string, windowDays: number, githubToken: string | undefined, limit: number): Promise<RawRepo[]> {
-  const since = new Date(Date.now() - windowDays * 86_400_000).toISOString().slice(0, 10);
-  const q = `${query} created:>=${since}`;
-  const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=${Math.min(Math.max(limit, 1), 30)}`;
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function searchGithubPage(
+  query: string,
+  sortBy: "stars" | "created" | "updated",
+  page: number,
+  perPage: number,
+  githubToken: string | undefined,
+  since: string | undefined,
+): Promise<RawRepo[]> {
+  const q = since ? `${query} created:>=${since}` : query;
+  const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=${sortBy}&order=desc&per_page=${perPage}&page=${page}`;
   const response = await fetch(url, {
     headers: {
       accept: "application/vnd.github+json",
@@ -46,7 +54,7 @@ async function searchGithub(query: string, windowDays: number, githubToken: stri
       ...(githubToken ? { authorization: `Bearer ${githubToken}` } : {}),
     },
   });
-  if (!response.ok) throw new Error(`GitHub search HTTP ${response.status}`);
+  if (!response.ok) throw new Error(`GitHub search HTTP ${response.status} (page ${page})`);
   const json = (await response.json()) as {
     items?: Array<{
       full_name: string;
@@ -69,21 +77,72 @@ async function searchGithub(query: string, windowDays: number, githubToken: stri
   }));
 }
 
+/**
+ * Multi-page GitHub search. GitHub caps search results at 1000 total, so
+ * `pages * perPage` is clamped to that. Paces requests to stay under the
+ * search API's rate limit (10 req/min unauthenticated, 30 req/min with a
+ * token) instead of bursting and getting 403'd partway through a scan.
+ */
+async function searchGithub(
+  query: string,
+  opts: { windowDays?: number; sortBy?: "stars" | "created" | "updated"; pages?: number; perPage?: number; githubToken?: string },
+): Promise<RawRepo[]> {
+  const sortBy = opts.sortBy ?? "stars";
+  const perPage = Math.min(Math.max(opts.perPage ?? 30, 1), 100);
+  const maxPages = Math.max(1, Math.floor(1000 / perPage));
+  const pages = Math.min(Math.max(opts.pages ?? 1, 1), maxPages);
+  const since = opts.windowDays ? new Date(Date.now() - opts.windowDays * 86_400_000).toISOString().slice(0, 10) : undefined;
+  const delayMs = opts.githubToken ? 2100 : 6100;
+
+  const seen = new Set<string>();
+  const all: RawRepo[] = [];
+  for (let page = 1; page <= pages; page++) {
+    let items: RawRepo[];
+    try {
+      items = await searchGithubPage(query, sortBy, page, perPage, opts.githubToken, since);
+    } catch (error) {
+      log.warn(`competitor scan: page ${page} failed, stopping pagination: ${error instanceof Error ? error.message : String(error)}`);
+      break;
+    }
+    if (items.length === 0) break;
+    for (const item of items) {
+      if (!seen.has(item.fullName)) {
+        seen.add(item.fullName);
+        all.push(item);
+      }
+    }
+    if (page < pages) await sleep(delayMs);
+  }
+  return all;
+}
+
 export class CompetitorScanner {
   constructor(private readonly deps: CompetitorScanDeps) {}
 
   async scan(
     query: string,
-    opts: { windowDays?: number; limit?: number; ourRepo?: string; ourDescription?: string } = {},
+    opts: {
+      windowDays?: number;
+      limit?: number;
+      pages?: number;
+      sortBy?: "stars" | "created" | "updated";
+      ourRepo?: string;
+      ourDescription?: string;
+    } = {},
   ): Promise<CompetitorReport> {
     const started = Date.now();
     const windowDays = opts.windowDays ?? 2;
-    const limit = opts.limit ?? 15;
     const ourDescription = opts.ourDescription ?? DEFAULT_OUR_DESCRIPTION;
 
     let raw: RawRepo[] = [];
     try {
-      raw = await searchGithub(query, windowDays, this.deps.githubToken, limit);
+      raw = await searchGithub(query, {
+        windowDays,
+        sortBy: opts.sortBy ?? "stars",
+        pages: opts.pages ?? 1,
+        perPage: opts.limit ?? 15,
+        githubToken: this.deps.githubToken,
+      });
     } catch (error) {
       log.warn(`competitor scan: GitHub search failed: ${error instanceof Error ? error.message : String(error)}`);
     }

@@ -82,6 +82,8 @@ async function main(): Promise<void> {
         await ctx.competitorScanner.scan(positionals.join(" ") || flags.get("query") || "", {
           windowDays: Number(flags.get("days") ?? 2),
           limit: Number(flags.get("limit") ?? 15),
+          pages: Number(flags.get("pages") ?? 1),
+          sortBy: (flags.get("sort") as "stars" | "created" | "updated" | undefined) ?? "stars",
           ourRepo: flags.get("repo"),
         }),
       );

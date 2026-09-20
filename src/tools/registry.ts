@@ -664,8 +664,10 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
     inputSchema: schema(
       {
         query: stringProp("Topic/keywords to search GitHub repos for (e.g. \"claude code plugin agent\")."),
-        windowDays: numberProp("Only consider repos created within the last N days (default 2)."),
-        limit: numberProp("Max candidates to fetch from GitHub search (default 15, max 30)."),
+        windowDays: numberProp("Only consider repos created within the last N days (default 2; 0 = no date filter, all-time)."),
+        limit: numberProp("Results per page from GitHub search (default 15, max 100)."),
+        pages: numberProp("How many pages to fetch and merge, oldest-rate-limited pacing applied between pages (default 1, max = 1000/limit)."),
+        sortBy: { type: "string", enum: ["stars", "created", "updated"], description: "Sort order (default stars; use created for a 'newest repos first' census)." },
         ourRepo: stringProp("owner/name of our repo, for the report only (not fetched)."),
         ourDescription: stringProp("Our project's positioning blurb (default: this repo's own README tagline)."),
       },
@@ -675,6 +677,8 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
       ctx.competitorScanner.scan(str(args, "query"), {
         windowDays: numArg(args, "windowDays", 2),
         limit: numArg(args, "limit", 15),
+        pages: numArg(args, "pages", 1),
+        sortBy: (optStr(args, "sortBy") as "stars" | "created" | "updated" | undefined) ?? "stars",
         ourRepo: optStr(args, "ourRepo"),
         ourDescription: optStr(args, "ourDescription"),
       }),
