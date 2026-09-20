@@ -105,7 +105,7 @@ node dist/cli.js memory report
 node dist/cli.js features                                # 20 enterprise features
 ```
 
-## MCP tools (24)
+## MCP tools (25)
 
 | Tool | Module | What it does |
 |---|---|---|
@@ -133,6 +133,7 @@ node dist/cli.js features                                # 20 enterprise feature
 | `hub_crawl` | research | Politely crawl the 11-source personal-development knowledge base |
 | `hub_query` | research | FTS5 + Jev-ranked, cited answers from the crawled hub |
 | `hub_stats` | research | Doc counts / word counts per source |
+| `hub_ingest_rendered` | research | Browser-render bridge: feed a page rendered by the calling agent's own browser tool (e.g. Claude Code's `claude-in-chrome`) through the same extract/license/store pipeline — for client-rendered sources a plain fetch can't read |
 
 ## One-click MCP install
 

@@ -128,10 +128,17 @@ Repo public: **https://github.com/Kadihx/jev-x-kit** (gh ile oluşturuldu + push
   `data/research-hub.sqlite` yerelde duruyor (repoya girmiyor, `.gitignore`
   zaten `data/*.sqlite*`'ı hariç tutuyor — kasıtlı: veri seti çalışma-zamanı
   verisi, kaynak kodu değil).
-- **Bilinen açık kalan 3 kaynak** (kod hatası değil, dış engel):
-  `lesswrong` (site artık Next.js SPA, statik `/sitemap.xml` yok — GraphQL API
-  reverse-engineering gerekir), `philarchive` (WAF 403, bot engelleniyor),
-  `core` (v3 API anahtarı gerektiriyor — `CORE_API_KEY` kararı bekliyor).
+- **Bilinen açık kalan 2 kaynak** (kod hatası değil, dış engel):
+  `philarchive` (WAF 403, bot engelleniyor), `core` (v3 API anahtarı
+  gerektiriyor — `CORE_API_KEY` kararı bekliyor).
+- **`lesswrong` düzeltildi (2026-09-21):** Statik fetch her zaman boş
+  Next.js kabuğu dönüyordu (SPA, JS render gerektiriyor). Kalıcı bir headless
+  tarayıcı bağımlılığı eklemek yerine `ingestRendered()` +
+  `hub_ingest_rendered` MCP tool'u eklendi: çağıran ajan (Claude Code, kendi
+  `claude-in-chrome` erişimiyle) sayfayı render edip HTML'i buraya veriyor,
+  jev-x-kit onu aynı extract/lisans/store pipeline'ından geçiriyor. Gerçek bir
+  LessWrong sayfasıyla (`.../posts/YMo5PuXnZDwRjhHhE/...`) uçtan uca
+  doğrulandı: 232 kelime, "inserted", `hub stats`'ta görünüyor.
 - **Uçtan uca doğrulama:** `qwen2.5:3b` (Ollama, yerelde açık) ile
   `stoic dichotomy of control` sorgusu → cevap kullanıcının yönergesindeki
   formatı birebir izledi: *core model → evidence [source-id] → concrete

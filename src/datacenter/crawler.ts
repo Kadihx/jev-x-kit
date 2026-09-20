@@ -13,7 +13,7 @@
 
 import { isWithinHours, type SourceConfig } from "./source-configs.js";
 import { isAllowed } from "./robots.js";
-import { detail, discover } from "./source-adapters.js";
+import { detail, discover, extractReadable, sha256 } from "./source-adapters.js";
 import { checkLicense } from "./license-engine.js";
 import { HubStore, type CrawlStats } from "./store.js";
 import { log } from "../core/log.js";
@@ -144,4 +144,53 @@ export async function crawlDatacenter(
   log.info(`crawl finished in ${Date.now() - started}ms: ${total} new/updated docs`);
   store.close();
   return { stats, runId, total, dryRun };
+}
+
+export interface RenderedIngestOutcome {
+  outcome: "inserted" | "updated" | "unchanged" | "license" | "empty";
+  wordCount: number;
+  title: string | null;
+}
+
+/**
+ * Browser-rendering bridge: for sources whose pages are client-rendered
+ * (e.g. LessWrong's Next.js app shell — a plain fetch returns no article
+ * text), the calling agent renders the page itself (Claude Code's own
+ * browser tool, e.g. claude-in-chrome) and hands the resulting HTML here.
+ * This keeps jev-x-kit's own footprint at "an HTTP fetch", while still
+ * benefiting from real rendered content when the caller can provide it —
+ * no headless-browser dependency added to this package.
+ */
+export function ingestRendered(
+  source: SourceConfig,
+  url: string,
+  html: string,
+  options: { minWords?: number; dbPath?: string } = {},
+): RenderedIngestOutcome {
+  const { minWords = 60, dbPath } = options;
+  const { title, content } = extractReadable(html, source.selectors);
+  const cleanedTitle = title.trim() || url;
+  const wordCount = content.split(/\s+/).filter(Boolean).length;
+  if (wordCount < minWords) return { outcome: "empty", wordCount, title: cleanedTitle };
+
+  const license = checkLicense(source, { title: cleanedTitle, url, content });
+  if (license.decision === "deny") return { outcome: "license", wordCount, title: cleanedTitle };
+  const body = license.decision === "metadata-only" ? content.slice(0, 1500) : content;
+
+  const store = new HubStore(dbPath);
+  try {
+    const outcome = store.upsert({
+      source: source.id,
+      url,
+      title: cleanedTitle.slice(0, 300),
+      content: body,
+      content_hash: sha256(body),
+      license: license.license,
+      author: null,
+      published: null,
+    });
+    return { outcome, wordCount, title: cleanedTitle };
+  } finally {
+    store.close();
+  }
 }

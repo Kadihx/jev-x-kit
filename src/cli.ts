@@ -74,7 +74,7 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 24 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 25 });
       return;
 
     case "competitors":

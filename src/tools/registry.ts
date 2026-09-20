@@ -30,7 +30,7 @@ import {
   sanitize,
 } from "../modules/enterprise-features.js";
 import { SOURCES, getSource, type SourceCategory } from "../datacenter/source-configs.js";
-import { crawlDatacenter } from "../datacenter/crawler.js";
+import { crawlDatacenter, ingestRendered } from "../datacenter/crawler.js";
 import { HubStore } from "../datacenter/store.js";
 import { queryHub } from "../datacenter/query.js";
 import type { JevRequest } from "../core/types.js";
@@ -588,6 +588,28 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
         onlySources: ids.length ? ids : undefined,
       });
     },
+  });
+
+  tools.push({
+    name: "hub_ingest_rendered",
+    title: "Research hub browser-render bridge",
+    description:
+      "For sources whose pages are client-rendered (a plain fetch returns an empty app shell, e.g. LessWrong) and hub_crawl discovers nothing: render the page yourself (a browser tool such as claude-in-chrome, or WebFetch) and hand the resulting HTML here. Extracts, license-checks and stores it exactly like the crawler would — this is jev-x-kit's browser-use path, without carrying its own browser dependency.",
+    inputSchema: schema(
+      {
+        source: stringProp(`Source id the page belongs to (${SOURCES.map((s) => s.id).join(", ")}).`),
+        url: stringProp("Canonical URL of the rendered page."),
+        html: stringProp("The rendered page's HTML (from your own browser/WebFetch tool)."),
+        minWords: numberProp("Minimum word count to keep (default 60)."),
+        dbPath: stringProp("Alternative SQLite path (default data/research-hub.sqlite)."),
+      },
+      ["source", "url", "html"],
+    ),
+    handler: async (args) =>
+      ingestRendered(getSource(str(args, "source")), str(args, "url"), str(args, "html"), {
+        minWords: numArg(args, "minWords", 60),
+        dbPath: optStr(args, "dbPath"),
+      }),
   });
 
   tools.push({
