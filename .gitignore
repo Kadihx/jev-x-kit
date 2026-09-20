@@ -3,6 +3,7 @@ dist/
 artifacts/*
 !artifacts/ESPORTS-INTELLIGENCE-REPORT.md
 !artifacts/esports-intel-report.json
+data/*.sqlite*
 .jev/
 .jev-skill-memory.json
 *.log
