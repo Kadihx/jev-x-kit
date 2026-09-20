@@ -22,6 +22,8 @@ import { JevTrainingKit } from "../modules/jev-training-kit.js";
 import { SelfImprover } from "../modules/self-improver.js";
 import { ChiefOfStaff, ROLE_CATALOG } from "../modules/jev-dispatcher.js";
 import { CompetitorScanner } from "../modules/jev-competitor-scan.js";
+import { CalibrationChecker } from "../modules/jev-calibration.js";
+import type { CalibrationCase, TranscriptMessage } from "../core/module-types.js";
 import {
   edgeCases,
   featureCatalog,
@@ -50,6 +52,7 @@ export interface AppContext {
   improver: SelfImprover;
   dispatcher: ChiefOfStaff;
   competitorScanner: CompetitorScanner;
+  calibrationChecker: CalibrationChecker;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -80,6 +83,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     improver: new SelfImprover({ memoryPath: config.memoryPath }),
     dispatcher: new ChiefOfStaff({ backend, memoryPath: config.memoryPath, concurrency: config.concurrency }),
     competitorScanner: new CompetitorScanner({ backend, llm, githubToken: config.githubToken }),
+    calibrationChecker: new CalibrationChecker({ backend, policy: config.policy }),
   };
 }
 
@@ -316,6 +320,47 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
       if (file) return ctx.compactor.winnowFile(file, options);
       return ctx.compactor.winnow(str(args, "text"), options);
     },
+  });
+
+  tools.push({
+    name: "jev_compact_transcript",
+    title: "Winnow lossless compaction (tool-call/result aware)",
+    description:
+      "Like jev_compact but operates on a structured message transcript instead of flat text: pairs each tool call with its tool result by id, decides per-pair (keep both / keep call + truncate result / drop both) with two Noul questions, and never drops a result that matches a file-path/command/error/URL/diff anchor even if Noul says drop. First and last N messages are pinned untouched (preserveRecentMessages, default 6).",
+    inputSchema: schema(
+      {
+        messages: arrayProp("Transcript messages.", {
+          type: "object",
+          properties: {
+            role: stringProp("Message role (user/assistant/etc.)."),
+            text: stringProp("Message text, if any."),
+            toolCalls: arrayProp("Tool calls in this message.", {
+              type: "object",
+              properties: { tool_use_id: stringProp("Unique id."), tool: stringProp("Tool name."), input: {} },
+              required: ["tool_use_id", "tool"],
+            }),
+            toolResults: arrayProp("Tool results in this message.", {
+              type: "object",
+              properties: { tool_use_id: stringProp("Matching call's id."), text: stringProp("Result text.") },
+              required: ["tool_use_id", "text"],
+            }),
+          },
+          required: ["role"],
+        }),
+        goal: stringProp("What the transcript is for (relevance anchor)."),
+        keepThreshold: numberProp("Noul keep threshold (default 0.5)."),
+        preserveRecentMessages: numberProp("Newest messages never touched (default 6)."),
+        truncateHeadChars: numberProp("Characters of a truncated result kept (default 300)."),
+      },
+      ["messages"],
+    ),
+    handler: async (args) =>
+      ctx.compactor.winnowTranscript((args["messages"] as TranscriptMessage[]) ?? [], {
+        goal: optStr(args, "goal"),
+        keepThreshold: numArg(args, "keepThreshold", 0.5),
+        preserveRecentMessages: numArg(args, "preserveRecentMessages", 6),
+        truncateHeadChars: numArg(args, "truncateHeadChars", 300),
+      }),
   });
 
   tools.push({
@@ -654,6 +699,29 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
         store.close();
       }
     },
+  });
+
+  tools.push({
+    name: "jev_calibration_check",
+    title: "Gatekeeper calibration check",
+    description:
+      "Feed known-answer Choice cases through the gatekeeper: buckets results by the same executeThreshold/escalateThreshold the gatekeeper uses, compares claimed confidence to real accuracy per bucket, and separately checks position bias (does the answer change when option order is reversed). Use to verify the 0.85/0.60 thresholds are actually trustworthy, not just configured.",
+    inputSchema: schema(
+      {
+        cases: arrayProp("Known-answer test cases.", {
+          type: "object",
+          properties: {
+            question: stringProp("The question to ask."),
+            options: arrayProp("Candidate options.", { type: "string" }),
+            correctIndex: numberProp("Index into options[] of the known-correct answer."),
+            state: stringProp("Optional verbatim context."),
+          },
+          required: ["question", "options", "correctIndex"],
+        }),
+      },
+      ["cases"],
+    ),
+    handler: async (args) => ctx.calibrationChecker.check((args["cases"] as CalibrationCase[]) ?? []),
   });
 
   tools.push({

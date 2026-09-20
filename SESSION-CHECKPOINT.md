@@ -147,6 +147,38 @@ Repo public: **https://github.com/Kadihx/jev-x-kit** (gh ile oluşturuldu + push
   backend'e bağlanması (şu an sadece final sentez `System2Client`/Ollama
   kullanıyor, alaka skorlaması hâlâ `heuristic`) gerekir.
 
+## 3b. GitHub rakip taraması + iki yeni modül (2026-09-21)
+
+- **`jev_competitor_scan` genişletildi:** sayfalama (`pages`) + sıralama
+  (`sortBy: stars|created|updated`) eklendi. Gerçek 20 sayfalık, "jev"
+  anahtar kelimeli, en-yeni-önce taraması yapıldı (`gh auth token` ile
+  kimlikli, rate-limit'e uygun 2.1s/sayfa): **son 5 günde 3.745 repo**
+  "jev" içeriyor — niş değil, gerçek bir ekosistem. En büyükler (tek tek
+  GitHub API'sinden doğrulandı, uydurma değil): `browser-use/jev-ultrafast`
+  (11.617★), `tamaratran/fast-jev-compaction` (5.067★, bizim Winnow'a
+  doğrudan rakip), `TheoLeeCJ/SemIf` (2.406★, bağımsız), `jarrodwatts/jev-trader`
+  (1.502★), `TianyuCodings/NanoJev` (1.375★). ~30 gerçek "awesome-jev"
+  listesi bulundu (`Anil-matcha/awesome-jev-by-typesafe` 697★, 2023'ten beri) —
+  gerçek dağıtım kanalı, PR atılabilir.
+- **Yeni modül — `jev_calibration_check`** (`src/modules/jev-calibration.ts`):
+  bilinen-cevaplı Choice test setini gatekeeper'dan geçirip güven-eşiği
+  kovalarına (< 0.6 / 0.6–0.85 / ≥ 0.85) göre iddia edilen güven ile gerçek
+  isabeti karşılaştırıyor + seçenek sırası tersine çevrildiğinde cevap
+  değişiyor mu diye pozisyon yanlılığı testi yapıyor. `presets/calibration-sample.json`
+  (10 soru) ile canlı test edildi: **heuristic backend** %30 isabet + **%100
+  pozisyon yanlılığı** (cevap sadece seçenek sırasına göre değişiyor — sahte
+  backend olduğunu kanıtlıyor); **gerçek Ollama qwen2.5:3b** %70 isabet ama
+  yine de **%50 pozisyon yanlılığı** — gerçek modelde bile ciddi bir sorun,
+  gelecekte "iki sıralamayı da sor, çoğunluk oyu al" gibi bir de-bias eklenebilir.
+- **Yeni özellik — `jev_compact_transcript`** (`ContextCompactor.winnowTranscript`,
+  `src/modules/context-compactor.ts`): `fast-jev-compaction`'ın README'sinden
+  öğrenilen yapıya cevap — düz metin satırı yerine tool_use/tool_result
+  çiftleri üzerinde çalışan Winnow varyantı, `preserveRecentMessages` ile ilk+son
+  N mesaj sabit kalıyor. Onlarda olmayan fark: anchor pattern'leri (dosya
+  yolu/komut/hata/URL/diff) Noul "at" derse bile sonucu koruyor — deterministik
+  güvenlik ağı. `tests/core.test.mjs`'e deterministik test eklendi (3 çift:
+  keep/drop/anchor-override), 28/28 yeşil.
+
 ## 4. Bundan sonra kalanlar (öncelik sırasıyla)
 
 1. **Retrieval kalitesi:** Noul relevance skorlamasını da gerçek bir backend'e

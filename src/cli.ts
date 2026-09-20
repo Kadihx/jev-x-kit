@@ -74,8 +74,15 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 25 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 28 });
       return;
+
+    case "calibration": {
+      const file = flags.get("file") ?? "presets/calibration-sample.json";
+      const cases = JSON.parse(fs.readFileSync(file, "utf8"));
+      print(await ctx.calibrationChecker.check(cases));
+      return;
+    }
 
     case "competitors":
       print(
@@ -182,7 +189,7 @@ async function main(): Promise<void> {
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration\n",
       );
       process.exitCode = command ? 1 : 0;
   }

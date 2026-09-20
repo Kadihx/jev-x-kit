@@ -109,6 +109,79 @@ export interface ResearchBrief {
   latencyMs: number;
 }
 
+/* Module 5b (extension): transcript-aware Winnow --------------------------- */
+
+export interface TranscriptToolCall {
+  tool_use_id: string;
+  tool: string;
+  input?: unknown;
+}
+
+export interface TranscriptToolResult {
+  tool_use_id: string;
+  text: string;
+}
+
+export interface TranscriptMessage {
+  role: string;
+  text?: string;
+  toolCalls?: TranscriptToolCall[];
+  toolResults?: TranscriptToolResult[];
+}
+
+export interface TranscriptCompactionReport {
+  totalMessages: number;
+  outputMessages: number;
+  totalPairs: number;
+  keptCalls: number;
+  truncatedResults: number;
+  droppedPairs: number;
+  /** Pairs where an anchor (path/command/error/url/diff) overrode a Noul "drop" verdict. */
+  anchorOverrides: number;
+  bytesIn: number;
+  bytesOut: number;
+  messages: TranscriptMessage[];
+  latencyMs: number;
+}
+
+/* Module — Gatekeeper calibration check ------------------------------------ */
+
+export interface CalibrationCase {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  state?: string;
+}
+
+export interface CalibrationBucket {
+  range: string;
+  count: number;
+  avgConfidence: number;
+  accuracy: number;
+  /** avgConfidence - accuracy. Positive = overconfident, negative = underconfident. */
+  calibrationGap: number;
+}
+
+export interface OrderBiasExample {
+  question: string;
+  originalSelected: string;
+  reversedSelected: string;
+}
+
+export interface CalibrationReport {
+  totalCases: number;
+  overallAccuracy: number;
+  buckets: CalibrationBucket[];
+  orderBias: {
+    testedCases: number;
+    flippedCount: number;
+    flipRate: number;
+    examples: OrderBiasExample[];
+  };
+  recommendation: string;
+  backend: string;
+}
+
 /* Module — Competitor / market scan --------------------------------------- */
 
 export interface CompetitorCandidate {

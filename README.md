@@ -105,7 +105,7 @@ node dist/cli.js memory report
 node dist/cli.js features                                # 20 enterprise features
 ```
 
-## MCP tools (25)
+## MCP tools (28)
 
 | Tool | Module | What it does |
 |---|---|---|
@@ -134,6 +134,9 @@ node dist/cli.js features                                # 20 enterprise feature
 | `hub_query` | research | FTS5 + Jev-ranked, cited answers from the crawled hub |
 | `hub_stats` | research | Doc counts / word counts per source |
 | `hub_ingest_rendered` | research | Browser-render bridge: feed a page rendered by the calling agent's own browser tool (e.g. Claude Code's `claude-in-chrome`) through the same extract/license/store pipeline — for client-rendered sources a plain fetch can't read |
+| `jev_compact_transcript` | 5b | Winnow for structured message transcripts: pairs each tool call with its result by id, decides per-pair (keep / truncate / drop), anchors override a "drop" verdict |
+| `jev_calibration_check` | new | Feeds known-answer Choice cases through the gatekeeper; compares claimed confidence to real accuracy per threshold bucket and checks option-order position bias |
+| `jev_competitor_scan` | new | Paginated/sortable GitHub search, Noul-ranked against our own positioning, System-2 "closest rival + gaps" synthesis |
 
 ## One-click MCP install
 

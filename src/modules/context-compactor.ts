@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import { round, tokenize } from "../core/text.js";
 import type { JevBackend, NoulResult } from "../core/types.js";
-import type { CompactionReport } from "../core/module-types.js";
+import type { CompactionReport, TranscriptCompactionReport, TranscriptMessage } from "../core/module-types.js";
 
 export interface CompactorDeps {
   backend: JevBackend;
@@ -152,5 +152,124 @@ export class ContextCompactor {
     const input = fs.readFileSync(file, "utf8");
     const report = await this.winnow(input, opts);
     return { ...report, file };
+  }
+
+  /**
+   * Structured variant: operates on a message transcript (a tool-use/
+   * tool-result-aware shape close to what an agent harness like Claude Code
+   * actually keeps in memory) instead of flat text. Same doctrine as
+   * `winnow()` — never rewrite, only delete — but the unit of decision is a
+   * tool-call/tool-result pair, matched by `tool_use_id`, with two Noul
+   * questions per pair (keep the call? keep the result verbatim?) instead of
+   * one per line. Anchors (file paths, commands, errors, URLs, diff headers —
+   * the same `ANCHOR_PATTERNS` `winnow()` uses) act as a deterministic
+   * safety net: a result matching an anchor is kept even if Noul says drop.
+   */
+  async winnowTranscript(
+    messages: TranscriptMessage[],
+    opts: WinnowOptions & { preserveRecentMessages?: number; truncateHeadChars?: number } = {},
+  ): Promise<TranscriptCompactionReport> {
+    const started = Date.now();
+    const threshold = opts.keepThreshold ?? 0.5;
+    const preserveRecent = opts.preserveRecentMessages ?? 6;
+    const truncateHeadChars = opts.truncateHeadChars ?? 300;
+    const bytesIn = Buffer.byteLength(JSON.stringify(messages), "utf8");
+
+    const pinned = new Set<number>();
+    if (messages.length > 0) pinned.add(0);
+    for (let i = Math.max(0, messages.length - preserveRecent); i < messages.length; i++) pinned.add(i);
+
+    interface Pair {
+      messageIndex: number;
+      call: { tool_use_id: string; tool: string; input?: unknown };
+      result?: { tool_use_id: string; text: string };
+    }
+    const resultById = new Map<string, { tool_use_id: string; text: string }>();
+    for (const m of messages) for (const r of m.toolResults ?? []) resultById.set(r.tool_use_id, r);
+
+    const pairs: Pair[] = [];
+    messages.forEach((m, mi) => {
+      if (pinned.has(mi)) return;
+      for (const call of m.toolCalls ?? []) {
+        pairs.push({ messageIndex: mi, call, result: resultById.get(call.tool_use_id) });
+      }
+    });
+
+    const evaluations = pairs.length
+      ? ((await this.deps.backend.batch(
+          pairs.flatMap((p) => [
+            {
+              kind: "noul" as const,
+              question: "Knowing this tool call was made (with its input), does that fact still matter for the rest of the task?",
+              state: `goal: ${opts.goal ?? "(unspecified)"}\ntool: ${p.call.tool}\ninput: ${JSON.stringify(p.call.input ?? {}).slice(0, 500)}`,
+            },
+            {
+              kind: "noul" as const,
+              question: "Is this tool result's content still needed verbatim, or would re-running the tool be just as good?",
+              state: `goal: ${opts.goal ?? "(unspecified)"}\ntool: ${p.call.tool}\nresult: ${(p.result?.text ?? "").slice(0, 800)}`,
+            },
+          ]),
+        )) as NoulResult[])
+      : [];
+
+    let keptCalls = 0;
+    let truncatedResults = 0;
+    let droppedPairs = 0;
+    let anchorOverrides = 0;
+    const decisions = new Map<string, "keep" | "truncate" | "drop">();
+
+    pairs.forEach((p, i) => {
+      const keepCall = evaluations[i * 2]!.probability;
+      const keepResult = evaluations[i * 2 + 1]!.probability;
+      const resultAnchors = p.result ? anchorMatches(p.result.text) : [];
+      const hasAnchor = resultAnchors.length > 0;
+
+      if (keepResult >= threshold || hasAnchor) {
+        if (hasAnchor && keepResult < threshold) anchorOverrides++;
+        decisions.set(p.call.tool_use_id, "keep");
+        keptCalls++;
+      } else if (keepCall >= threshold) {
+        decisions.set(p.call.tool_use_id, "truncate");
+        keptCalls++;
+        truncatedResults++;
+      } else {
+        decisions.set(p.call.tool_use_id, "drop");
+        droppedPairs++;
+      }
+    });
+
+    const outputMessages: TranscriptMessage[] = [];
+    messages.forEach((m, mi) => {
+      if (pinned.has(mi)) {
+        outputMessages.push(m);
+        return;
+      }
+      const toolCalls = (m.toolCalls ?? []).filter((c) => decisions.get(c.tool_use_id) !== "drop");
+      const toolResults = (m.toolResults ?? [])
+        .filter((r) => decisions.get(r.tool_use_id) !== "drop")
+        .map((r) =>
+          decisions.get(r.tool_use_id) === "truncate"
+            ? { ...r, text: `${r.text.slice(0, truncateHeadChars)}\n[…truncated by Winnow, ${r.text.length - truncateHeadChars} more chars…]` }
+            : r,
+        );
+      const hasContent = (m.text && m.text.trim().length > 0) || toolCalls.length > 0 || toolResults.length > 0;
+      if (hasContent) outputMessages.push({ ...m, toolCalls: toolCalls.length ? toolCalls : undefined, toolResults: toolResults.length ? toolResults : undefined });
+    });
+
+    const bytesOut = Buffer.byteLength(JSON.stringify(outputMessages), "utf8");
+
+    return {
+      totalMessages: messages.length,
+      outputMessages: outputMessages.length,
+      totalPairs: pairs.length,
+      keptCalls,
+      truncatedResults,
+      droppedPairs,
+      anchorOverrides,
+      bytesIn,
+      bytesOut,
+      messages: outputMessages,
+      latencyMs: round(Date.now() - started, 3),
+    };
   }
 }

@@ -143,6 +143,33 @@ test("winnow compaction is lossless for kept lines and protective for anchors", 
   assert.ok(report.preservedAnchors.includes("error"));
 });
 
+test("winnowTranscript keeps positive results, drops negative-no-anchor ones, and anchor-overrides a negative-with-anchor one", async () => {
+  const compactor = new ContextCompactor({ backend });
+  const messages = [
+    { role: "user", text: "kickoff" },
+    { role: "assistant", toolCalls: [{ tool_use_id: "keep1", tool: "Bash", input: { command: "run tests, coverage, typed, atomic" } }] },
+    { role: "user", toolResults: [{ tool_use_id: "keep1", text: "tests passing, coverage, typed, atomic, deterministic, reviewed" }] },
+    { role: "assistant", toolCalls: [{ tool_use_id: "drop1", tool: "Read", input: { note: "legacy hack todo" } }] },
+    { role: "user", toolResults: [{ tool_use_id: "drop1", text: "this hack is legacy spaghetti todo blocked slow unsupported" }] },
+    { role: "assistant", toolCalls: [{ tool_use_id: "anchor1", tool: "Read", input: { note: "legacy hack todo" } }] },
+    { role: "user", toolResults: [{ tool_use_id: "anchor1", text: "deprecated, hack, legacy, blocked, slow, spaghetti, unsupported, vulnerable" }] },
+    { role: "assistant", text: "done" },
+  ];
+  const report = await compactor.winnowTranscript(messages, { preserveRecentMessages: 1 });
+
+  assert.equal(report.totalPairs, 3);
+  assert.equal(report.droppedPairs, 1, "the negative-cue, no-anchor pair must be dropped");
+  assert.equal(report.anchorOverrides, 1, "the negative-cue, anchor-matching pair must be overridden to keep");
+  assert.equal(report.keptCalls, 2);
+
+  const idsPresent = new Set(
+    report.messages.flatMap((m) => [...(m.toolCalls ?? []).map((c) => c.tool_use_id), ...(m.toolResults ?? []).map((r) => r.tool_use_id)]),
+  );
+  assert.ok(idsPresent.has("keep1"), "clearly-relevant pair must survive");
+  assert.ok(idsPresent.has("anchor1"), "anchor-protected pair must survive despite negative Noul signal");
+  assert.ok(!idsPresent.has("drop1"), "negative-cue pair with no anchor must be dropped");
+});
+
 test("guardrail blocks destructive calls and allows benign ones", async () => {
   const cos = new ChiefOfStaff({ backend });
   const blocked = await cos.guardrail("bash", "rm -rf /");

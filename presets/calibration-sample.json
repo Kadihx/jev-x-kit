@@ -1,0 +1,12 @@
+[
+  { "question": "What is the capital of France?", "options": ["Berlin", "Madrid", "Paris", "Rome"], "correctIndex": 2 },
+  { "question": "Which of these numbers is prime?", "options": ["4", "6", "7", "9"], "correctIndex": 2 },
+  { "question": "Which planet is closest to the sun?", "options": ["Venus", "Mercury", "Earth", "Mars"], "correctIndex": 1 },
+  { "question": "In HTTP, which status code means 'not found'?", "options": ["200", "301", "404", "500"], "correctIndex": 2 },
+  { "question": "Which data structure is FIFO (first-in, first-out)?", "options": ["Stack", "Queue", "Tree", "Graph"], "correctIndex": 1 },
+  { "question": "What does CPU stand for?", "options": ["Central Process Unit", "Central Processing Unit", "Computer Personal Unit", "Core Processing Utility"], "correctIndex": 1 },
+  { "question": "Which of these is a NoSQL database?", "options": ["PostgreSQL", "MySQL", "MongoDB", "SQLite"], "correctIndex": 2 },
+  { "question": "Which gas do plants primarily absorb for photosynthesis?", "options": ["Oxygen", "Nitrogen", "Carbon dioxide", "Hydrogen"], "correctIndex": 2 },
+  { "question": "Which sorting algorithm has average-case O(n log n) time complexity?", "options": ["Bubble sort", "Insertion sort", "Merge sort", "Selection sort"], "correctIndex": 2 },
+  { "question": "What is the boiling point of water at sea level in Celsius?", "options": ["90", "100", "110", "212"], "correctIndex": 1 }
+]
