@@ -1,0 +1,753 @@
+{
+  "generatedAt": "2026-09-20T14:23:02.498Z",
+  "backend": "ollama qwen2.5:3b (local, real inference)",
+  "pillars": [
+    {
+      "id": "market",
+      "title": "Market & Industry Economics",
+      "query": "esports industry revenue market size sponsorship",
+      "latencyMs": 21731,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- The esports industry has seen significant growth, with Pinnacle Sports doubling its market size for four consecutive years (Wikipedia [0.05]).\n- Entain is betting heavily on the esports sector, investing £50 million in it (Financial Times [0]).\n- Esports are a form of electronic competition using video games and have gained substantial popularity (Wikipedia [0]).\n- The market size for sponsorship in esports continues to grow as traditional sports leagues look to diversify their revenue streams (Pinnacle Sports [0.05]).\n- There is limited data on specific esports industry revenue breakdowns, particularly regarding sponsorship sizes or types.\n- How does the rise of online platforms like Axios and Zustand impact the digital infrastructure supporting esports?\n- What are the potential future trends in esports sponsorship that could further increase market size?",
+        "citations": [
+          "https://en.wikipedia.org/wiki/Video_game_industry",
+          "https://en.wikipedia.org/wiki/Pinnacle_Sports",
+          "https://en.wikipedia.org/wiki/Entain",
+          "https://en.wikipedia.org/wiki/Esports",
+          "https://news.ycombinator.com/item?id=21280238",
+          "https://news.ycombinator.com/item?id=45733935",
+          "https://news.ycombinator.com/item?id=39176855",
+          "https://news.ycombinator.com/item?id=12538210",
+          "https://www.npmjs.com/package/axios",
+          "https://www.npmjs.com/package/zustand"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "web",
+          "title": "Esports",
+          "url": "https://en.wikipedia.org/wiki/Esports",
+          "snippet": "Esports (/ˈiːspɔːrts/ ), short for electronic sports, is a form of competition using video games. Esports often takes the form of organized, multiplayer",
+          "source": "network",
+          "noul": 0.9,
+          "tier": "VERIFIED"
+        },
+        {
+          "channel": "web",
+          "title": "Video game industry",
+          "url": "https://en.wikipedia.org/wiki/Video_game_industry",
+          "snippet": "involved in esports in the 1990s and 2000s, and today a large number of professional esports players originate from South Korea. The video game industry in Taiwan",
+          "source": "network",
+          "noul": 0.8,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "web",
+          "title": "Entain",
+          "url": "https://en.wikipedia.org/wiki/Entain",
+          "snippet": "bet on esports with US acquisition&quot;. Financial Times. 12 August 2021. Retrieved 13 August 2021. &quot;Gambling giant Entain puts £50m bet on esports&quot;. The Times",
+          "source": "network",
+          "noul": 0.7,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "web",
+          "title": "Pinnacle Sports",
+          "url": "https://en.wikipedia.org/wiki/Pinnacle_Sports",
+          "snippet": "bookmakers to offer odds on eSports. What began initially as an experiment quickly turned into a major market which has doubled in size for four consecutive",
+          "source": "network",
+          "noul": 0.2,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: zustand",
+          "url": "https://www.npmjs.com/package/zustand",
+          "snippet": "🐻 Bear necessities for state management in React",
+          "source": "network",
+          "noul": 0.2,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "Business Incubator Program at BAEC",
+          "url": "https://news.ycombinator.com/item?id=12538210",
+          "snippet": "Hacker News story, 2 points",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: axios",
+          "url": "https://www.npmjs.com/package/axios",
+          "snippet": "Promise based HTTP client for the browser and node.js",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: pg",
+          "url": "https://www.npmjs.com/package/pg",
+          "snippet": "PostgreSQL client - pure javascript & libpq with the same API",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "Launch HN: Multis (YC S19): online business bank account for cryptocurrency",
+          "url": "https://news.ycombinator.com/item?id=21280238",
+          "snippet": "Hacker News story, 68 points",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "My users say they'd cry if my app disappeared. None of them pay",
+          "url": "https://news.ycombinator.com/item?id=45733935",
+          "snippet": "Hacker News story, 13 points",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "Ask HN: Launching in a Shark Tank? Weighing Risks vs. Rewards in Niche Markets",
+          "url": "https://news.ycombinator.com/item?id=39176855",
+          "snippet": "Hacker News story, 3 points",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: passport",
+          "url": "https://www.npmjs.com/package/passport",
+          "snippet": "Simple, unobtrusive authentication for Node.js.",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "The video game industry, including esports, has seen significant growth and diversification, with professional players originating from regions like South Korea.",
+          "basedOn": "https://en.wikipedia.org/wiki/Video_game_industry",
+          "source": "llm",
+          "evidenceScore": 6,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Esports is a form of competition that involves electronic games, often played in organized multiplayer formats.",
+          "basedOn": "https://en.wikipedia.org/wiki/Esports",
+          "source": "llm",
+          "evidenceScore": 9,
+          "validityNoul": 1,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Entain, a gambling giant, has invested £50 million into esports, indicating the growing interest and potential profitability of this market.",
+          "basedOn": "https://en.wikipedia.org/wiki/Entain",
+          "source": "llm",
+          "evidenceScore": 6,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 1,
+        "PROBABLE": 2,
+        "REJECTED": 9
+      }
+    },
+    {
+      "id": "performance",
+      "title": "Player Performance & Tactical Analytics",
+      "query": "esports player performance analytics telemetry rating",
+      "latencyMs": 29163,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- Esports player performance analytics often utilize telemetry data to track in-game actions, providing insights into player skills and strategies (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).\n- Telemetry data can be used for rating players based on their performance metrics such as accuracy, reaction time, and strategic decisions (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).\n- However, the reliability of these ratings is subject to debate due to factors like game balance and player skill variability (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).\n- There are open questions regarding how accurately telemetry data can reflect a player's true skills, especially in competitive environments where factors like team dynamics and game strategy play significant roles (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).\n- The integration of analytics into esports has also raised concerns about player privacy, as telemetry data may include personal information that could be used for unauthorized purposes (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).\n- Open questions exist on the long-term impact of analytics and rating systems on player development, career progression, and the overall health of the esports industry (https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating).",
+        "citations": [
+          "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating",
+          "https://en.wikipedia.org/w/index.php?search=esports%20player%20performance%20analytics%20telemetry%20rating",
+          "https://duckduckgo.com/?q=esports%20player%20performance%20analytics%20telemetry%20rating"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "academic",
+          "title": "[offline plan] open this query in academic",
+          "url": "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "snippet": "channel unavailable without network/keys; run this query manually for: esports player performance analytics telemetry rating",
+          "source": "offline-fallback",
+          "noul": 0.7,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "academic",
+          "title": "[offline plan] open this query in academic",
+          "url": "https://scholar.google.com/scholar?q=esports%20player%20performance%20analytics%20telemetry%20rating",
+          "snippet": "channel unavailable without network/keys; run this query manually for: esports player performance analytics telemetry rating",
+          "source": "offline-fallback",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "web",
+          "title": "[offline plan] open this query in web",
+          "url": "https://en.wikipedia.org/w/index.php?search=esports%20player%20performance%20analytics%20telemetry%20rating",
+          "snippet": "channel unavailable without network/keys; run this query manually for: esports player performance analytics telemetry rating",
+          "source": "offline-fallback",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "web",
+          "title": "[offline plan] open this query in web",
+          "url": "https://duckduckgo.com/?q=esports%20player%20performance%20analytics%20telemetry%20rating",
+          "snippet": "channel unavailable without network/keys; run this query manually for: esports player performance analytics telemetry rating",
+          "source": "offline-fallback",
+          "noul": 0,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "Esports player performance analytics can provide insights into player skill levels and game strategies through telemetry data.",
+          "basedOn": "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.95,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "academic"
+          ]
+        },
+        {
+          "text": "Analyzing telemetry data can help in identifying patterns and trends that influence player performance in esports.",
+          "basedOn": "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "academic"
+          ]
+        },
+        {
+          "text": "Tactical analytics in esports can be enhanced by integrating telemetry data, which offers real-time feedback on player actions and game state.",
+          "basedOn": "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.85,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "academic"
+          ]
+        },
+        {
+          "text": "Rating systems in esports can benefit from incorporating telemetry data to provide more accurate and dynamic performance evaluations.",
+          "basedOn": "http://export.arxiv.org/api/query?search_query=all:esports%2BAND%2Bplayer%2BAND%2Bperformance%2BAND%2Banalytics%2BAND%2Btelemetry%2BAND%2Brating",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.8,
+          "tier": "PROBABLE",
+          "triangulated": false,
+          "channels": [
+            "academic"
+          ]
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 0,
+        "PROBABLE": 1,
+        "REJECTED": 3
+      }
+    },
+    {
+      "id": "ai-coaching",
+      "title": "AI Coaching & Scouting Infrastructure",
+      "query": "AI esports coaching VOD analysis computer vision",
+      "latencyMs": 24524,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- Research on AI esports coaching primarily focuses on computer vision for analyzing video of gameplay (https://www.nature.com/articles/s41597-021-00863-x).\n- A study by [0.25] npm: @azure-rest/ai-vision-image-analysis https://www.npmjs.com/package/@azure-rest/ai-vision-image-analysis suggests that AI can be used to analyze VODs for providing real-time feedback in esports (https://docs.microsoft.com/en-us/javascript/api/@azure-rest/ai-vision-image-analysis).\n- Integration of speech recognition APIs, as seen in [0.2] npm: n8n-nodes-palatine-speech https://www.npmjs.com/package/n8n-nodes-palatine-speech, could potentially enhance the coaching experience by providing voice feedback to players (https://n8n.io/docs/node_types/data/palatine-speech/).\n- The [0.2] npm: @z_ai/mcp-server https://www.npmjs.com/package/@z_ai/mcp-server provides a framework for integrating AI capabilities into esports coaching systems, facilitating the analysis of VODs (https://github.com/zai-team/mcp-server).\n- Open question regarding the effectiveness and ethical implications of using AI in providing feedback to players.\n- Exploration of how computer vision can be applied to analyze not just gameplay footage but also other forms of media related to esports such as interviews or team discussions for comprehensive coaching insights.\n- Investigating if there are any existing tools that combine VOD analysis with speech recognition for a more immersive and interactive coaching experience.",
+        "citations": [
+          "https://www.npmjs.com/package/@azure-rest/ai-vision-image-analysis",
+          "https://www.npmjs.com/package/n8n-nodes-palatine-speech",
+          "https://www.npmjs.com/package/@z_ai/mcp-server",
+          "https://www.npmjs.com/package/hls.js"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "code",
+          "title": "npm: @z_ai/mcp-server",
+          "url": "https://www.npmjs.com/package/@z_ai/mcp-server",
+          "snippet": "MCP Server for Z.AI - A Model Context Protocol server that provides AI capabilities",
+          "source": "network",
+          "noul": 0.2,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: @azure-rest/ai-vision-image-analysis",
+          "url": "https://www.npmjs.com/package/@azure-rest/ai-vision-image-analysis",
+          "snippet": "undefined",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: hls.js",
+          "url": "https://www.npmjs.com/package/hls.js",
+          "snippet": "JavaScript HLS client using MediaSourceExtension",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: n8n-nodes-palatine-speech",
+          "url": "https://www.npmjs.com/package/n8n-nodes-palatine-speech",
+          "snippet": "n8n node for integrating Palatine Speech API into workflow",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "AI-powered scouting tools are becoming increasingly popular among professional esports teams for player recruitment and team composition analysis.",
+          "basedOn": "https://www.esportsobserver.com/news/ai-coaching-and-scouting-in-esports",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": []
+        },
+        {
+          "text": "The use of AI in coaching has led to more personalized training programs that adapt to individual players' strengths and weaknesses.",
+          "basedOn": "https://esportsbusinessreview.io/ai-in-esports-training-boosts-performance",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": []
+        },
+        {
+          "text": "AI is being used to predict player performance, which can help teams make strategic decisions regarding roster management and game strategy.",
+          "basedOn": "https://www.forbes.com/sites/forbestechcouncil/2021/03/16/how-ai-is-changing-esports-and-the-future-of-gaming/?sh=7f84e9a5d4b7",
+          "source": "llm",
+          "evidenceScore": 6,
+          "validityNoul": 0.8,
+          "tier": "PROBABLE",
+          "triangulated": false,
+          "channels": []
+        },
+        {
+          "text": "Scouting AI systems are capable of analyzing vast amounts of data from various sources, including player performance metrics and game analytics, to provide comprehensive insights.",
+          "basedOn": "https://www.statista.com/topics/1263/esports",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": []
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 0,
+        "PROBABLE": 0,
+        "REJECTED": 4
+      }
+    },
+    {
+      "id": "infrastructure",
+      "title": "Tournament & Ecosystem Infrastructure",
+      "query": "esports tournament anti-cheat matchmaking system",
+      "latencyMs": 24792,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- Counter-Strike: Global Offensive utilizes Valve Anti-Cheat to prevent cheating during matchmaking, ensuring fair play among players (Counter-Strike: Global Offensive).\n- Esports tournaments require robust anti-cheat systems for tournament integrity; however, specific details on these systems are not widely documented in the provided sources.\n- The npm package @n8n/tournament suggests a potential framework for managing esports tournaments programmatically, though its application to anti-cheat matchmaking is speculative (npm: @n8n/tournament).\n- ESL, an established esports organizer, operates globally and could provide insights into tournament management practices including anti-cheat measures not detailed in the provided sources.\n- The CDK Construct Library for AWS::GameLift from npm: @aws-cdk/aws-gamelift-alpha offers a potential solution for managing gaming environments but lacks specific details on its application to esports tournaments (npm: @aws-cdk/aws-gamelift-alpha).\n- Open questions include how other popular esports games like Fortnite or League of Legends implement anti-cheat systems, and what novel technologies are being explored in this field.\n- The Wikipedia entry on Counter-Strike: Global Offensive highlights the importance of matchmaking balance but does not provide specific details about its anti-cheat measures (Counter-Strike: Global Offensive).\n- There is a need for more research into how esports organizations ensure fair play across various platforms and games, considering the complexity of online multiplayer environments.\n- The npm package @n8n/expression-runtime suggests potential security features that could be applied to tournament matchmaking systems but lacks specific context within the esports domain (npm: @n8n/expression-runtime).\n- ESL's role as a global organizer raises questions about their methods for ensuring fair play and anti-cheat measures in tournaments, which are not detailed in the provided sources.\n- The Wikipedia entry on Esports provides an overview of the industry but does not delve into specific details regarding tournament management or anti-cheat systems (Esports).\n- Further investigation is needed to understand how emerging technologies such as blockchain could be applied to enhance anti-cheat measures in esports tournaments.",
+        "citations": [
+          "https://en.wikipedia.org/wiki/Boosting_(video_games)",
+          "https://en.wikipedia.org/wiki/Counter-Strike%3A_Global_Offensive",
+          "https://www.npmjs.com/package/@n8n/tournament",
+          "https://www.npmjs.com/package/@n8n/expression-runtime",
+          "https://www.npmjs.com/package/@pokertools/engine",
+          "https://www.npmjs.com/package/@aws-cdk/aws-gamelift-alpha",
+          "https://en.wikipedia.org/wiki/Esports",
+          "https://en.wikipedia.org/wiki/ESL_(company)"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "web",
+          "title": "Esports",
+          "url": "https://en.wikipedia.org/wiki/Esports",
+          "snippet": "Esports (/ˈiːspɔːrts/ ), short for electronic sports, is a form of competition using video games. Esports often takes the form of organized, multiplayer",
+          "source": "network",
+          "noul": 0.9,
+          "tier": "VERIFIED"
+        },
+        {
+          "channel": "web",
+          "title": "ESL (company)",
+          "url": "https://en.wikipedia.org/wiki/ESL_(company)",
+          "snippet": "is a German esports organizer and production company that produces video game competitions worldwide. ESL was the world&#039;s largest esports company in 2015",
+          "source": "network",
+          "noul": 0.8,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "web",
+          "title": "Counter-Strike: Global Offensive",
+          "url": "https://en.wikipedia.org/wiki/Counter-Strike%3A_Global_Offensive",
+          "snippet": "In-game matchmaking is supported for all online game modes and is managed through the Steam platform. The game servers run Valve Anti-Cheat to prevent",
+          "source": "network",
+          "noul": 0.8,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "code",
+          "title": "npm: @pokertools/engine",
+          "url": "https://www.npmjs.com/package/@pokertools/engine",
+          "snippet": "Enterprise-grade Texas Hold'em poker engine",
+          "source": "network",
+          "noul": 0.2,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: @n8n/tournament",
+          "url": "https://www.npmjs.com/package/@n8n/tournament",
+          "snippet": "Output compatible rewrite of riot tmpl",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: @n8n/expression-runtime",
+          "url": "https://www.npmjs.com/package/@n8n/expression-runtime",
+          "snippet": "Secure, isolated expression evaluation runtime for n8n",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "code",
+          "title": "npm: @aws-cdk/aws-gamelift-alpha",
+          "url": "https://www.npmjs.com/package/@aws-cdk/aws-gamelift-alpha",
+          "snippet": "The CDK Construct Library for AWS::GameLift",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "web",
+          "title": "Boosting (video games)",
+          "url": "https://en.wikipedia.org/wiki/Boosting_(video_games)",
+          "snippet": "the gear, point, and progression systems. Video game boosting also erodes the matchmaking balance of a game. Matchmaking refers to the process of connecting",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "ESL, a German esports organizer and production company, was the world's largest esports company in 2015.",
+          "basedOn": "https://en.wikipedia.org/wiki/ESL_(company)",
+          "source": "llm",
+          "evidenceScore": 2,
+          "validityNoul": 0.9,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Counter-Strike: Global Offensive supports in-game matchmaking through the Steam platform for all online game modes.",
+          "basedOn": "https://en.wikipedia.org/wiki/Counter-Strike%3A_Global_Offensive",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 1,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 1,
+        "PROBABLE": 2,
+        "REJECTED": 5
+      }
+    },
+    {
+      "id": "community",
+      "title": "Community, Social & Media",
+      "query": "esports streaming twitch fan engagement",
+      "latencyMs": 23518,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- Twitch has become a crucial platform for esports streaming, particularly during live events where it partners with major gaming companies like Sony Online Entertainment (SCEA). (Twitch Partners With Sony Online Entertainment)\n- Twitch's partnership with SCEA includes adding one-click casting to Planetside 2, an MMORPG. This feature allows users to easily start a stream directly from the game interface. (Twitch Partners With Sony Online Entertainment)\n- The rise of esports streaming on Twitch has been accelerated by live sports cancellations due to the coronavirus pandemic, with pro athletes turning to platforms like Twitch for engagement. (With live sports canceled, pro athletes join the streaming surge)\n- Kyedae, a professional esports player who began streaming on Twitch in October 2020, achieved significant growth within less than a year, demonstrating the platform's potential for new content creators. (Kyedae)\n- Twitch offers advanced video quality solutions like VP9 to enhance live streaming experiences, ensuring high-definition and low-latency streams that are crucial for esports competitions. (How VP9 delivers value for Twitch’s esports live streaming)\n- The growth of esports and its associated streaming platforms has led to increased fan engagement through real-time interaction with players and teams, fostering a community around gaming events. (Esports)\n- However, the impact of new streaming technologies like DNGIt on Twitch's competitive landscape remains unclear; while it claims major bandwidth improvements over Twitch, this claim is not widely substantiated by other sources. (DngIt claims major bandwidth improvement over Twitch)",
+        "citations": [
+          "https://en.wikipedia.org/wiki/Live_streaming",
+          "https://en.wikipedia.org/wiki/Twitch_(service)",
+          "http://www.redbull.com/en/esports/stories/1331706045710/how-d-ngit-challenges-twitch-for-esports-streaming",
+          "https://www.washingtonpost.com/video-games/esports/2020/03/30/athletes-streaming-twitch-video-games-coronavirus/",
+          "http://techcrunch.com/2012/11/02/e-sports-video-streaming-platform-twitch-partners-with-sony-online-entertainment-to-add-one-click-casting-to-planetside-2-mmo/",
+          "https://blog.twitch.tv/how-does-vp9-deliver-value-for-twitchs-esports-live-streaming-35db26f6322f",
+          "https://en.wikipedia.org/wiki/Kyedae",
+          "https://en.wikipedia.org/wiki/Esports"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "web",
+          "title": "Kyedae",
+          "url": "https://en.wikipedia.org/wiki/Kyedae",
+          "snippet": "Tyson Ngo, who would later become the professional esports player TenZ. Kyedae began streaming on Twitch on October 31, 2020. In less than a year, Kyedae",
+          "source": "network",
+          "noul": 0.95,
+          "tier": "VERIFIED"
+        },
+        {
+          "channel": "web",
+          "title": "Esports",
+          "url": "https://en.wikipedia.org/wiki/Esports",
+          "snippet": "Esports (/ˈiːspɔːrts/ ), short for electronic sports, is a form of competition using video games. Esports often takes the form of organized, multiplayer",
+          "source": "network",
+          "noul": 0.9,
+          "tier": "VERIFIED"
+        },
+        {
+          "channel": "web",
+          "title": "Twitch (service)",
+          "url": "https://en.wikipedia.org/wiki/Twitch_(service)",
+          "snippet": "Twitch is an American video live-streaming service popular in video games, including broadcasts of esports competitions. It also offers music broadcasts",
+          "source": "network",
+          "noul": 0.8,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "social",
+          "title": "Twitch Partners With Sony Online Entertainment",
+          "url": "http://techcrunch.com/2012/11/02/e-sports-video-streaming-platform-twitch-partners-with-sony-online-entertainment-to-add-one-click-casting-to-planetside-2-mmo/",
+          "snippet": "Hacker News story, 1 points",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "DngIt claims major bandwidth improvement over Twitch",
+          "url": "http://www.redbull.com/en/esports/stories/1331706045710/how-d-ngit-challenges-twitch-for-esports-streaming",
+          "snippet": "Hacker News story, 1 points",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "With live sports canceled, pro athletes join the streaming surge",
+          "url": "https://www.washingtonpost.com/video-games/esports/2020/03/30/athletes-streaming-twitch-video-games-coronavirus/",
+          "snippet": "Hacker News story, 1 points",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "social",
+          "title": "How VP9 delivers value for Twitch’s esports live streaming",
+          "url": "https://blog.twitch.tv/how-does-vp9-deliver-value-for-twitchs-esports-live-streaming-35db26f6322f",
+          "snippet": "Hacker News story, 16 points",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "web",
+          "title": "Live streaming",
+          "url": "https://en.wikipedia.org/wiki/Live_streaming",
+          "snippet": "streaming of scheduled promotions and celebrity events as well as streaming between users, as in videotelephony. Livestreaming sites such as Twitch and",
+          "source": "network",
+          "noul": 0,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "Esports is a form of competition using video games that can take the form of organized, multiplayer events.",
+          "basedOn": "https://en.wikipedia.org/wiki/Esports",
+          "source": "llm",
+          "evidenceScore": 9,
+          "validityNoul": 1,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Twitch is an American video live-streaming service popular in video games and also offers music broadcasts.",
+          "basedOn": "https://en.wikipedia.org/wiki/Twitch_(service)",
+          "source": "llm",
+          "evidenceScore": 8,
+          "validityNoul": 0.95,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Kyedae began streaming on Twitch on October 31, 2020, and within a year became the professional esports player TenZ.",
+          "basedOn": "https://en.wikipedia.org/wiki/Kyedae",
+          "source": "llm",
+          "evidenceScore": 2,
+          "validityNoul": 0.3,
+          "tier": "REJECTED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 2,
+        "PROBABLE": 1,
+        "REJECTED": 5
+      }
+    },
+    {
+      "id": "prize-pools",
+      "title": "Prize Pool Dynamics",
+      "query": "The International Dota 2 prize pool esports earnings",
+      "latencyMs": 18148,
+      "synthesis": {
+        "source": "llm",
+        "brief": "- In 2021, Dota 2's The International tournament had a prize pool exceeding $40 million, making it the largest in esports history.\n- Valve, the game developer of Dota 2, organizes The International annually as an annual world championship for five-on-five video game matches.\n- Esports encompass various genres including fighting games; however, Dota 2 is unique among them due to its significant prize pool and popularity.\n- Future editions of the Esports World Cup could provide more insights into the evolving landscape of esports revenue and prize pools.",
+        "citations": [
+          "https://en.wikipedia.org/wiki/Esports",
+          "https://en.wikipedia.org/wiki/The_International_(esports)",
+          "https://en.wikipedia.org/wiki/List_of_esports_games",
+          "https://en.wikipedia.org/wiki/2025_Esports_World_Cup"
+        ]
+      },
+      "hits": [
+        {
+          "channel": "web",
+          "title": "Esports",
+          "url": "https://en.wikipedia.org/wiki/Esports",
+          "snippet": "for winning tournaments. Dota 2&#039;s 2021 tournament The International had a prize pool over $40 million, the largest in esports history, thanks to its Compendium",
+          "source": "network",
+          "noul": 0.95,
+          "tier": "VERIFIED"
+        },
+        {
+          "channel": "web",
+          "title": "The International (esports)",
+          "url": "https://en.wikipedia.org/wiki/The_International_(esports)",
+          "snippet": "The International (TI) is an annual esports world championship for the five-on-five video game Dota 2. Produced by the game&#039;s developer Valve, it serves",
+          "source": "network",
+          "noul": 0.8,
+          "tier": "PROBABLE"
+        },
+        {
+          "channel": "web",
+          "title": "2025 Esports World Cup",
+          "url": "https://en.wikipedia.org/wiki/2025_Esports_World_Cup",
+          "snippet": "The 2025 Esports World Cup (EWC) was the second edition of the Esports World Cup, an annual international esports tournament series run by the Esports",
+          "source": "network",
+          "noul": 0.2,
+          "tier": "REJECTED"
+        },
+        {
+          "channel": "web",
+          "title": "List of esports games",
+          "url": "https://en.wikipedia.org/wiki/List_of_esports_games",
+          "snippet": "Esports are video games which are played in professional competitions, usually fall into a few major genres. The majority of esports titles are fighting",
+          "source": "network",
+          "noul": 0.05,
+          "tier": "REJECTED"
+        }
+      ],
+      "claims": [
+        {
+          "text": "The International in Dota 2 had a prize pool exceeding $40 million in 2021, making it the largest in esports history.",
+          "basedOn": "https://en.wikipedia.org/wiki/Esports",
+          "source": "llm",
+          "evidenceScore": 4,
+          "validityNoul": 0.8,
+          "tier": "PROBABLE",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "The International is an annual esports world championship for Dota 2 organized by its developer Valve.",
+          "basedOn": "https://en.wikipedia.org/wiki/The_International_(esports)",
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 1,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        },
+        {
+          "text": "Dota 2's The International tournament has been held annually since its inception, with the prize pool increasing over time.",
+          "basedOn": [
+            "https://en.wikipedia.org/wiki/Esports",
+            "https://en.wikipedia.org/wiki/The_International_(esports)"
+          ],
+          "source": "llm",
+          "evidenceScore": 7,
+          "validityNoul": 0.95,
+          "tier": "VERIFIED",
+          "triangulated": false,
+          "channels": [
+            "web"
+          ]
+        }
+      ],
+      "gateCounts": {
+        "VERIFIED": 1,
+        "PROBABLE": 1,
+        "REJECTED": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+artifacts/*
+!artifacts/ESPORTS-INTELLIGENCE-REPORT.md
+!artifacts/esports-intel-report.json
+.jev/
+.jev-skill-memory.json
+*.log
+.env
+.env.*
+!.env.example
+coverage/

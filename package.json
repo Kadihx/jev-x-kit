@@ -1,0 +1,48 @@
+{
+  "name": "jev-super-agent-mcp",
+  "version": "0.1.0",
+  "description": "Universal TypeSafe Jev & OpenJev autonomous decision, deep research, ultra-planning and self-improving agent framework exposed as an MCP server.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "jev-super-agent-mcp": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "presets"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/index.js",
+    "cli": "node dist/cli.js",
+    "smoke": "node scripts/smoke-test.mjs",
+    "test:real": "node scripts/real-backend-test.mjs",
+    "test:hub": "node --test \"tests/datacenter.test.mjs\"",
+    "hub": "node dist/hub-cli.js",
+    "test": "node --test \"tests/*.test.mjs\""
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "jev",
+    "openjev",
+    "agent",
+    "decision",
+    "gatekeeper",
+    "red-team",
+    "self-improving",
+    "local-llm"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "cheerio": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "~5.9.2"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "legal-compliance",
+  "title": "Legal, License & Compliance (KVKK/GDPR)",
+  "domain": "legal",
+  "version": 1,
+  "rules": [
+    "MIT / Apache-2.0 / BSD code may be reused with attribution preserved.",
+    "GPL / AGPL code must never be copied into proprietary code: clean-room only.",
+    "Unknown or missing license equals all-rights-reserved: treat as copyleft.",
+    "Personal data needs a lawful basis, a retention period and a deletion path.",
+    "Data subject requests (access, deletion, portability) need a documented SLA.",
+    "Cross-border transfers require an explicit legal mechanism.",
+    "Logs must not contain personal data beyond what the purpose requires."
+  ],
+  "redFlags": [
+    "vendored GPL file in proprietary repo",
+    "privacy policy without retention terms",
+    "analytics without consent where required",
+    "PII in application logs",
+    "no DPA with subprocessors",
+    "cookie banner without reject-all parity"
+  ],
+  "checklist": [
+    "Is every dependency license recorded with SPDX id in the SBOM?",
+    "Is there a data map (what, where, why, how long)?",
+    "Is deletion honored across backups within policy window?",
+    "Are minors' data flows explicitly handled?",
+    "Is attribution text present for permissive licenses?"
+  ],
+  "scoringRubric": {
+    "1-3": "Exposed: license violations, no data map, PII in logs.",
+    "4-6": "Incomplete: some records, unclear retention, manual processes.",
+    "7-8": "Compliant: SBOM, data map, retention policy, tested deletion.",
+    "9-10": "Audit-proof: automated license gates, DPIA per feature, verified DSAR SLA."
+  }
+}

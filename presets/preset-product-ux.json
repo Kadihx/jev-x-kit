@@ -1,0 +1,36 @@
+{
+  "id": "product-ux",
+  "title": "Product, UX & Generative UI",
+  "domain": "product",
+  "version": 1,
+  "rules": [
+    "First-run experience must reach value in under 60 seconds.",
+    "Every screen needs an empty state, a loading state and an error state.",
+    "Prefer generative UI (json-render style) for data-shaped screens: same schema, many layouts.",
+    "One primary action per screen; destructive actions require explicit confirmation.",
+    "Form fields must be justified one by one; each optional field is friction debt.",
+    "Keyboard navigation and screen-reader labels ship with the feature, not after it."
+  ],
+  "redFlags": [
+    "onboarding tour longer than 3 steps",
+    "modal over modal",
+    "no undo for destructive action",
+    "placeholder-as-label only",
+    "layout shift on load",
+    "dark pattern opt-out"
+  ],
+  "checklist": [
+    "Is there a visible path back (undo, breadcrumb, cancel)?",
+    "Does the empty state teach the first action?",
+    "Are interactive elements at least 44px touch targets on mobile?",
+    "Is the copy specific (no 'something went wrong' alone)?",
+    "Is time-to-first-value measured in analytics?",
+    "Are component props typed and documented for reuse?"
+  ],
+  "scoringRubric": {
+    "1-3": "Confusing: no states, unclear actions, blocked flows.",
+    "4-6": "Usable but rough: missing states, unmeasured activation, inconsistent copy.",
+    "7-8": "Clean: all states covered, fast first value, typed components, accessible.",
+    "9-10": "Delightful: generative layouts, personalized onboarding, measurable retention lift."
+  }
+}

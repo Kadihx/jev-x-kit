@@ -1,0 +1,41 @@
+{
+  "id": "software-architecture",
+  "title": "Software Architecture & Engineering",
+  "domain": "software",
+  "version": 1,
+  "rules": [
+    "Prefer boring, proven technology over novel dependencies for critical paths.",
+    "Every module must be independently testable; no hidden global state.",
+    "Keep the typed boundary at the edges: validate inputs, trust internals.",
+    "Design for reversibility: migrations, feature flags and rollbacks before launches.",
+    "SOLID at class level, but prefer composition and pure functions over inheritance trees.",
+    "Never store secrets in code, logs or diffs; use environment variables.",
+    "Coverage is a proxy, not a goal: critical paths need explicit tests, not 100% totals."
+  ],
+  "redFlags": [
+    "race condition",
+    "unbounded retry loop",
+    "shared mutable cache without eviction",
+    "unhandled promise rejection",
+    "string-concatenated SQL",
+    "god object over 800 lines",
+    "tests that assert nothing",
+    "silent catch blocks",
+    "circular dependency between packages"
+  ],
+  "checklist": [
+    "Does every new module have at least one unit test on the happy path and one on failure?",
+    "Is there a single source of truth for each piece of state?",
+    "Are timeouts and cancellation propagated to every network call?",
+    "Is the error path user-visible and actionable?",
+    "Can this change be reverted with one commit or one flag?",
+    "Is the public API documented in the README or a spec file?",
+    "Does CI run typecheck, tests and build on every PR?"
+  ],
+  "scoringRubric": {
+    "1-3": "Fragile: no tests, unclear boundaries, hidden coupling, no rollback path.",
+    "4-6": "Workable: partial coverage, some coupling, manual rollback, unclear ownership.",
+    "7-8": "Strong: typed boundaries, tested critical paths, feature-flagged, documented.",
+    "9-10": "Bulletproof: invariant checks, fuzz/edge tests, observability, automated rollback."
+  }
+}

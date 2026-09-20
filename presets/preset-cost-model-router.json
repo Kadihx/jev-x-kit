@@ -1,0 +1,34 @@
+{
+  "id": "cost-model-router",
+  "title": "Cost Model & Router Matrix",
+  "domain": "finance-ops",
+  "version": 1,
+  "rules": [
+    "Micro-decisions (classify, route, gate, score) go to the Jev/system-1 layer: ~$0.042 / 1M input tokens, $0 output.",
+    "Local OpenJev/vLLM inference is $0: prefer it for batch labeling and nightly jobs.",
+    "Reserve frontier LLMs for open-ended synthesis, planning and code generation.",
+    "Batch independent questions in one fan-out request; latency and cost do not grow per extra question.",
+    "Cache deterministic decisions; identical state + identical question must not be re-billed.",
+    "Escalate to System 2 only when gatekeeper confidence is below the tuned threshold."
+  ],
+  "redFlags": [
+    "per-token model used for yes/no routing",
+    "unbounded agent loops without decision caching",
+    "frontier model summarizing raw logs",
+    "retry storms without backoff",
+    "no cost attribution per feature"
+  ],
+  "checklist": [
+    "Is there a per-feature cost budget?",
+    "Are system-1 routes logged with confidence and outcome for calibration?",
+    "Is the batch path used for >3 independent evaluations?",
+    "Is there a hard monthly ceiling with graceful degradation to local models?",
+    "Are prompt payloads pruned with Winnow instead of summarized?"
+  ],
+  "scoringRubric": {
+    "1-3": "Uncontrolled: everything hits the frontier model, costs untracked.",
+    "4-6": "Partial: some caching, unclear routing policy, no budgets.",
+    "7-8": "Routed: confidence-gated escalation, fan-out batching, per-feature budgets.",
+    "9-10": "Optimal: calibrated thresholds, $0 local default path, nightly auto-tuning from outcomes."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "cybersecurity",
+  "title": "Cybersecurity & Pen-Test Matrix",
+  "domain": "security",
+  "version": 1,
+  "rules": [
+    "Treat every external input as hostile: validate, normalize, then trust.",
+    "Server-side authorization on every request; client checks are UX only.",
+    "Row Level Security must be enabled and tested per table policy.",
+    "Secrets live in a vault or environment; rotate on exposure immediately.",
+    "Escape at render boundaries; parameterize at query boundaries.",
+    "Log security-relevant events with actor, action, resource and outcome.",
+    "Rate-limit authentication and expensive endpoints by identity, not just IP."
+  ],
+  "redFlags": [
+    "string-concatenated SQL",
+    "hardcoded API key",
+    "RLS disabled on user data table",
+    "eval of user input",
+    "unvalidated file upload path",
+    "JWT without expiry verification",
+    "CORS wildcard with credentials"
+  ],
+  "checklist": [
+    "OWASP Top 10 walkthrough documented for the current release?",
+    "Are dependencies pinned and scanned (npm audit / osv)?",
+    "Is there an incident runbook with contact path and rollback?",
+    "Are backups encrypted and tested by restore?",
+    "Is least-privilege enforced for service accounts?"
+  ],
+  "scoringRubric": {
+    "1-3": "Critical exposure: injection possible, secrets in repo, no RLS.",
+    "4-6": "Basic hygiene: some validation, incomplete authorization review.",
+    "7-8": "Hardened: parameterized queries, RLS tested, secrets managed, rate limits.",
+    "9-10": "Adversarial-ready: continuous scanning, red-team drills, least privilege everywhere."
+  }
+}

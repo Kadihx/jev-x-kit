@@ -1,0 +1,38 @@
+{
+  "id": "marketing-growth",
+  "title": "Marketing, Launch & Growth",
+  "domain": "marketing",
+  "version": 1,
+  "rules": [
+    "Lead with the pain, not the feature; one sentence per audience segment.",
+    "Every claim needs a demo, a benchmark or a customer quote behind it.",
+    "Show HN post mortems: title must be the artifact, body must be honest about limits.",
+    "Reddit promotion requires karma and community-specific value; never cross-post spam.",
+    "Track CAC per channel and LTV per cohort before scaling spend.",
+    "Launch narrow: one ICP, one promise, one wedge feature.",
+    "Instrument activation before acquisition: a leaky funnel wastes every click."
+  ],
+  "redFlags": [
+    "guaranteed results claims",
+    "fake scarcity countdowns",
+    "astroturfed reviews",
+    "keyword-stuffed landing copy",
+    "no pricing page",
+    "signup wall before value",
+    "discord-only support path"
+  ],
+  "checklist": [
+    "Is there a one-line value proposition above the fold?",
+    "Does the landing page load in under 2s on 4G?",
+    "Is there a free, no-signup trial path to the wow moment?",
+    "Are OG meta tags and a share image present?",
+    "Is the launch channel list ranked by expected CAC?",
+    "Is there a feedback loop (email, analytics, changelog) after launch?"
+  ],
+  "scoringRubric": {
+    "1-3": "Invisible: no positioning, no proof, no funnel instrumentation.",
+    "4-6": "Present but generic: unclear ICP, weak proof, leaky activation.",
+    "7-8": "Sharp: clear wedge, proof-backed claims, measured funnel, ranked channels.",
+    "9-10": "Compounding: referral loops, retained cohorts, channel-scaled CAC < LTV/3."
+  }
+}

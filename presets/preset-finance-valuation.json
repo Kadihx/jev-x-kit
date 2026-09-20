@@ -1,0 +1,35 @@
+{
+  "id": "finance-valuation",
+  "title": "Finance, Unit Economics & Valuation",
+  "domain": "finance",
+  "version": 1,
+  "rules": [
+    "Gross margin must be stated per plan tier after payment and inference costs.",
+    "CAC payback under 12 months; LTV/CAC above 3 for sustainable growth.",
+    "Model burn with three scenarios: base, slow growth, churn shock.",
+    "Price on value metric, not on seats, when usage correlates with value.",
+    "Every valuation claim needs an anti-thesis: what makes it 50% lower?",
+    "Track net revenue retention per cohort, not blended averages.",
+    "Inference cost per active user is a first-class unit-economics line."
+  ],
+  "redFlags": [
+    "blended metrics hiding bad cohorts",
+    "unlimited free tier with frontier-model costs",
+    "revenue recognized before delivery",
+    "no churn definition",
+    "pricing not tested in 6+ months"
+  ],
+  "checklist": [
+    "Is there a one-page unit-economics model with formulas, not numbers only?",
+    "Are inference costs attributed per feature and per user?",
+    "Is there a break-even chart with current burn?",
+    "Are top-3 investor objections written down with data-backed responses?",
+    "Is there a pricing experiment backlog?"
+  ],
+  "scoringRubric": {
+    "1-3": "Blind: no unit economics, unbounded variable costs, blended-only metrics.",
+    "4-6": "Directional: rough model, missing cohort detail, untested pricing.",
+    "7-8": "Solid: per-cohort NRR, CAC payback modeled, cost attribution, valuation anti-theses.",
+    "9-10": "Investor-grade: scenario-tested model, verified cohorts, price experiment cadence."
+  }
+}
