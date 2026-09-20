@@ -1,0 +1,33 @@
+---
+name: jev
+description: Use when a coding agent needs a fast, $0 micro-decision (yes/no routing, confidence-gated execution), an adversarial plan review, a 4-channel research pass, lossless log compaction, or a repo/PR audit instead of ad-hoc free-text reasoning. Symptoms - "should I retry or escalate", "sanity-check this plan", "compact this giant log without losing paths/commands", "audit this repo before merge".
+---
+
+# Jev — offline decision layer
+
+Wraps the Jev CLI (`node dist/cli.js <command>`, built from this repo) so routine
+micro-decisions run through schema-validated primitives instead of free text.
+
+## When to reach for which command
+
+| Need | Command |
+|---|---|
+| Yes/no or multi-option routing with a confidence score | `decide "<question>" --options "a,b,c"` |
+| Sanity-check / stress-test a plan before executing it | `redteam "<plan or assumption>"` |
+| Multi-step plan with hypothesis + anti-thesis scoring | `plan "<goal>" --preset <preset>` |
+| Shrink a huge log/context without losing paths, commands, errors | `compact --file <path> --goal "<what to keep>"` |
+| Web/academic/code/social research, Jev-ranked | `research "<topic>"` |
+| Repo-wide architecture/security/legal/budget scan | `audit <path>` |
+| Pre-execution guardrail for a risky tool call | `guardrail --tool <tool> --args "<args>"` |
+| Run tsc+tests and record a reward for self-tuning | `verify --cwd .` |
+
+Run `node dist/cli.js features` for the full 20-feature catalog and
+`node dist/cli.js info` to see which backend (local LLM / heuristic) is active.
+
+## Notes
+
+- 100% offline-capable: no API key or GPU required, deterministic heuristic
+  backend is always available as a fallback.
+- If an MCP server is configured (see this plugin's `mcpServers` entry), prefer
+  the equivalent `jev_*` tools over shelling out to the CLI.
+- Full command/tool reference: `README.md` at the repo root.

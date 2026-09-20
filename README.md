@@ -1,9 +1,26 @@
-# jev-super-agent-mcp
+# jev-x-kit
 
-Universal **TypeSafe Jev / OpenJev** autonomous decision, deep research, ultra-planning & self-improving agent framework, exposed as a **Model Context Protocol (MCP) server** + CLI.
+[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Node >=18](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](package.json)
+[![Tests: 27/27](https://img.shields.io/badge/tests-27%2F27-brightgreen.svg)](tests)
+
+Universal **TypeSafe Jev / OpenJev** autonomous decision, deep research, ultra-planning & self-improving agent framework — packaged as a **Claude Code plugin/skill**, an **MCP server**, and a standalone **CLI**.
 
 > Built for Claude Code, Cursor, Codex, **OpenCode**, **Continue.dev**, **Ollama / vLLM**, and every MCP-compatible agent.
 > Runs 100% free and offline: no API key, no GPU, no cloud required.
+
+## Install as a Claude Code plugin (30 seconds)
+
+```bash
+git clone https://github.com/Kadihx/jev-x-kit.git
+cd jev-x-kit && npm install && npm run build
+```
+
+Then point Claude Code at this folder as a plugin (`.claude-plugin/plugin.json` is
+already wired up: it registers the `jev` skill and the `jev-super-agent` MCP server
+with 21 tools). See [`skills/jev/SKILL.md`](skills/jev/SKILL.md) for the command
+cheat-sheet Claude reads to decide when to reach for Jev instead of free-text
+reasoning.
 
 ## Why this exists (6 root problems)
 

@@ -1,0 +1,28 @@
+{
+  "name": "jev-x-kit",
+  "description": "Offline $0 decision layer for coding agents: Choice/Score/Noul primitives, a BELKI confidence gatekeeper, ultra-planning, red-teaming, 4-channel research, lossless log compaction and RLVR self-improvement — as an MCP server + CLI + skill.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Kadihx"
+  },
+  "homepage": "https://github.com/Kadihx/jev-x-kit",
+  "repository": "https://github.com/Kadihx/jev-x-kit",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "jev",
+    "openjev",
+    "agent",
+    "decision-layer",
+    "self-improving",
+    "local-llm",
+    "offline"
+  ],
+  "mcpServers": {
+    "jev-super-agent": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/dist/index.js"]
+    }
+  }
+}

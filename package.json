@@ -1,18 +1,26 @@
 {
-  "name": "jev-super-agent-mcp",
+  "name": "jev-x-kit",
   "version": "0.1.0",
-  "description": "Universal TypeSafe Jev & OpenJev autonomous decision, deep research, ultra-planning and self-improving agent framework exposed as an MCP server.",
+  "description": "Universal TypeSafe Jev & OpenJev autonomous decision, deep research, ultra-planning and self-improving agent framework exposed as an MCP server + CLI + Claude Code skill.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://github.com/Kadihx/jev-x-kit",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kadihx/jev-x-kit.git"
+  },
+  "bugs": "https://github.com/Kadihx/jev-x-kit/issues",
   "engines": {
     "node": ">=18"
   },
   "bin": {
-    "jev-super-agent-mcp": "dist/cli.js"
+    "jev": "dist/cli.js"
   },
   "files": [
     "dist",
-    "presets"
+    "presets",
+    "skills",
+    ".claude-plugin"
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
