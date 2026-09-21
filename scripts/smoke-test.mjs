@@ -59,7 +59,7 @@ try {
   const listed = await client.listTools();
   check("tools/list exposes >= 20 tools", listed.tools.length >= 20, `got ${listed.tools.length}`);
   const names = listed.tools.map((t) => t.name);
-  for (const required of ["jev_evaluate", "jev_decide", "jev_plan", "jev_redteam", "jev_audit", "jev_guardrail"]) {
+  for (const required of ["jev_evaluate", "jev_decide", "jev_plan", "jev_redteam", "jev_audit", "jev_guardrail", "jev_skill_router"]) {
     check(`tool registered: ${required}`, names.includes(required));
   }
 
@@ -80,6 +80,12 @@ try {
   check("score stays within [1,10]", score.score >= 1 && score.score <= 10);
   check("noul stays within [0,1]", noul.probability >= 0 && noul.probability <= 1);
   check("batch wall time recorded", typeof evaluated.stats.wallMs === "number");
+
+  // 2b) Skill router: fully offline (online defaults to false), must not hang or throw
+  const skillRouted = await call("jev_skill_router", { task: "sanity-check a plan before executing it", limit: 2 });
+  check("skill router returns a valid zone", skillRouted.zone === "execute" || skillRouted.zone === "speculative");
+  check("skill router reports scanned dirs", Array.isArray(skillRouted.scannedDirs));
+  check("skill router stayed offline by default", skillRouted.usedRemoteCatalog === false);
 
   // 3) Gatekeeper decision persists to memory
   const decided = await call("jev_decide", {
@@ -202,7 +208,7 @@ try {
   });
   check("pr gate blocks secret + breaking change", pr.verdict === "block");
   const features = await call("jev_features");
-  check("feature catalog has 20 items", features.features.length === 20);
+  check("feature catalog has 21 items", features.features.length === 21);
 
   // 13) Backend info self-diagnosis
   const info = await call("jev_backend_info");
