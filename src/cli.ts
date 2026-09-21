@@ -74,7 +74,7 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 28 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 29 });
       return;
 
     case "calibration": {
@@ -130,6 +130,17 @@ async function main(): Promise<void> {
     case "audit":
       print(await ctx.audit.run(positionals[0] ?? process.cwd(), { preset: flags.get("preset") }));
       return;
+
+    case "skills": {
+      const task = positionals.join(" ") || flags.get("task") || "";
+      print(
+        await ctx.skillRouter.route(task, {
+          limit: Number(flags.get("limit") ?? 3),
+          online: flags.get("online") === "true",
+        }),
+      );
+      return;
+    }
 
     case "verify": {
       const commands = flags.get("commands")?.split("|").filter(Boolean);
@@ -189,7 +200,7 @@ async function main(): Promise<void> {
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills\n",
       );
       process.exitCode = command ? 1 : 0;
   }

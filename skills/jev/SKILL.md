@@ -18,6 +18,7 @@ micro-decisions run through schema-validated primitives instead of free text.
 | Shrink a huge log/context without losing paths, commands, errors | `compact --file <path> --goal "<what to keep>"` |
 | Web/academic/code/social research, Jev-ranked | `research "<topic>"` |
 | Repo-wide architecture/security/legal/budget scan | `audit <path>` |
+| Discover/rank Claude Skills for a task (installed + catalog) | `skills "<task>" [--online]` |
 | Pre-execution guardrail for a risky tool call | `guardrail --tool <tool> --args "<args>"` |
 | Run tsc+tests and record a reward for self-tuning | `verify --cwd .` |
 

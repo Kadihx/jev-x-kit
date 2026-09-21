@@ -23,6 +23,7 @@ import { SelfImprover } from "../modules/self-improver.js";
 import { ChiefOfStaff, ROLE_CATALOG } from "../modules/jev-dispatcher.js";
 import { CompetitorScanner } from "../modules/jev-competitor-scan.js";
 import { CalibrationChecker } from "../modules/jev-calibration.js";
+import { SkillRouter } from "../modules/jev-skill-router.js";
 import type { CalibrationCase, TranscriptMessage } from "../core/module-types.js";
 import {
   edgeCases,
@@ -53,6 +54,7 @@ export interface AppContext {
   dispatcher: ChiefOfStaff;
   competitorScanner: CompetitorScanner;
   calibrationChecker: CalibrationChecker;
+  skillRouter: SkillRouter;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -84,6 +86,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     dispatcher: new ChiefOfStaff({ backend, memoryPath: config.memoryPath, concurrency: config.concurrency }),
     competitorScanner: new CompetitorScanner({ backend, llm, githubToken: config.githubToken }),
     calibrationChecker: new CalibrationChecker({ backend, policy: config.policy }),
+    skillRouter: new SkillRouter({ backend }),
   };
 }
 
@@ -269,6 +272,26 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
       ["root"],
     ),
     handler: async (args) => ctx.audit.run(str(args, "root"), { preset: optStr(args, "preset") }),
+  });
+
+  tools.push({
+    name: "jev_skill_router",
+    title: "Claude Skills discovery & routing",
+    description:
+      "Discover installed Claude Code Skills (project/user/plugin trees) plus not-yet-installed skills from local marketplace catalogs (and, if online=true, Anthropic's public catalog), then rank them for a task with the Jev Score primitive. Never installs anything itself — returns the exact `claude plugin` commands to run.",
+    inputSchema: schema(
+      {
+        task: stringProp("The task or need to match a skill against."),
+        limit: numberProp("Max ranked results per list (default 3)."),
+        online: booleanProp("Also fetch the public fallback catalog over HTTPS (default false, fully offline)."),
+      },
+      ["task"],
+    ),
+    handler: async (args) =>
+      ctx.skillRouter.route(str(args, "task"), {
+        limit: numArg(args, "limit", 3),
+        online: boolArg(args, "online", false),
+      }),
   });
 
   tools.push({

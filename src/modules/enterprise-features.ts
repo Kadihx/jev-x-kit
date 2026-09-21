@@ -30,6 +30,7 @@ export const FEATURES: FeatureDescriptor[] = [
   { id: 18, slug: "churn-sentinel", name: "Customer Churn & Sentiment Sentinel", status: "implemented", tool: "jev_evaluate", summary: "Noul churn-risk scoring per customer signal." },
   { id: 19, slug: "dependency-sandbox", name: "Dependency Upgrade Sandbox Simulator", status: "scaffolded", tool: "jev_guardrail", summary: "Simulate dependency bumps and gate risky upgrades." },
   { id: 20, slug: "pitch-deck-engine", name: "Pitch-Deck & Valuation Engine", status: "implemented", tool: "jev_redteam", summary: "Investor anti-theses generated and scored before the meeting." },
+  { id: 21, slug: "skill-router", name: "Claude Skills Router", status: "implemented", tool: "jev_skill_router", summary: "Discovers installed + catalog Claude Skills and ranks them for a task via the Jev Score primitive." },
 ];
 
 export function featureCatalog(): FeatureDescriptor[] {
