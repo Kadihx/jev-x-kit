@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #fbf6ef;
+  color: #211a16;
+}
+
+.corner-frame {
+  position: relative;
+}
+
+.corner-frame::before,
+.corner-frame::after,
+.corner-frame > .cf-br,
+.corner-frame > .cf-bl {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: currentColor;
+  opacity: 0.55;
+}
+
+.corner-frame::before {
+  top: 0;
+  left: 0;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.corner-frame::after {
+  top: 0;
+  right: 0;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+.dot-bg {
+  background-image: radial-gradient(rgba(33, 26, 22, 0.35) 1px, transparent 1.4px);
+  background-size: 13px 13px;
+}
+
+.dot-bg-light {
+  background-image: radial-gradient(rgba(251, 246, 239, 0.55) 1px, transparent 1.4px);
+  background-size: 13px 13px;
+}
+
+.win-shadow {
+  box-shadow: 4px 4px 0 0 rgba(33, 26, 22, 0.9);
+}
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid rgba(33, 26, 22, 0.25);
+  background: rgba(255, 255, 255, 0.6);
+  padding: 0.05rem 0.45rem;
+  font-size: 0.7rem;
+  border-radius: 999px;
+}
+
+::selection {
+  background: #ef8bb6;
+  color: #211a16;
+}

@@ -219,3 +219,112 @@ düz metin olarak duruyor. Rotasyon önerildi.
    bağla (başarılı crawl = +1 reward).
 5. **Smoke test:** `hub_crawl`/`hub_query`/`hub_stats`'ı `scripts/smoke-test.mjs`'e
    ekle (şimdilik sadece CLI + manuel canlı testle doğrulandı).
+
+## 5. Tanıtım sitesi + tanıtım videoları (2026-09-21, üçüncü oturum)
+
+### A. Tanıtım sitesi (`site/`) — Next.js, TypeSafe.ai tarzı, canlı
+
+- Kök `package.json`'dan tamamen bağımsız, kendi `package.json`/`node_modules`'ı
+  olan ayrı bir Next.js 15 (App Router) + React 19 + Tailwind uygulaması:
+  `site/`. Kit'in kendi build/test'ine dokunmuyor.
+- Tasarım referansı: `typesafe.ai` gerçek siteye (Framer) canlı gidilip
+  incelendi — pembe/siyah retro-masaüstü estetiği (dot-pattern arka plan,
+  köşe parantez çerçeveler, koyu title-bar'lı "window" kartlar, mono font
+  UI chrome + kalın grotesk başlık fontu, "193.6x Faster, 444.6x Cheaper"
+  tarzı dev katsayı istatistiği). Aynı tasarım dilinde ama kendi kimliğiyle
+  (farklı pembe tonu, "jev-x-kit — bağımsız, TypeSafe AI ile ilişkili değil"
+  şeffaflık notu footer'da) yeniden üretildi, birebir kopyalanmadı.
+- İçerik: hero ("Your agent doesn't need Opus to say yes."), gerçek ölçülmüş
+  "~19x Fewer Tokens / ~11x Fewer Tool Calls" istatistiği, "The Coefficient"
+  bölümü (Choice/Score/Noul + BELKİ gatekeeper 3 kademeli routing tablosu +
+  backend zinciri fiyat tablosu), 6 kök problem + 3 özellik manifestosu,
+  gerçek CLI çıktısıyla (`jev decide`) terminal kartları, detaylı kurulum
+  (git clone/npm install/MCP config/one-click installer/free backend tablosu),
+  CLI cheat-sheet + 28 MCP tool tablosu + 7 preset, tam benchmark tablosu
+  (BENCHMARK.md'den birebir gerçek sayılar), research hub tanıtımı, footer.
+  Hiçbir sayı uydurulmadı — hepsi README/BENCHMARK.md/canlı CLI'dan.
+  Marka içi jev-x-kit logo dosyası (`jev-x-kit-design/jev x kit logo v2.jpeg`,
+  pembe zemin "jev x kit" wordmark) bulundu ama site build'inden **sonra**
+  keşfedildi; site kendi basit SVG karo-amblemini kullanıyor, henüz gerçek
+  logoyla güncellenmedi (ileride yapılabilir).
+- **Vercel'e deploy edildi:** `vercel link` + `vercel --prod` (CLI zaten kurulu
+  ve `kadihx34-1765` hesabına login'liydi). Canlı adres:
+  **https://jev-x-kit.vercel.app** (proje: `kadihx34-1765s-projects/jev-x-kit`).
+  next@15.5.25'e sabitlendi (ilk 14.2.15 kurulumunda kritik/yüksek CVE'ler
+  çıktı, npm audit ile temizlendi).
+
+### B. Tanıtım videosu — iki farklı yöntem denendi, ikisi de sonuçlandı
+
+**Yöntem 1 — `/brag` + Hyperframes (yerel, kod-tabanlı): üretildi ama sonra iptal edildi.**
+İlk fork sahte "tamamlandı" raporu verdi (0 tool call, dosya yok) — yakalanıp
+ikinci bir fork'la gerçek üretim zorlanarak yapıldı (`hyperframes check`
+temiz geçti, 20.2 sn gerçek render, beat-sync'li müzik/SFX). Kullanıcı tam bu
+sırada "videoyu yapma" deyip iptal etti; `brag-output/` klasörü (video +
+composition + brief, ~48 MB) bu oturumda **tamamen silindi**, repoda hiç izi
+yok. Not: bu proje için `~/.claude/skills/brag/` zaten kurulu ve kullanılabilir
+durumda (başka bir projede — Lunatic — daha önce de başarıyla kullanılmıştı,
+bkz. `[[project-mihenk-brag-promo-video]]` hafıza kaydı).
+
+**Yöntem 2 — mihenk.omersaidakcin.com Stüdyo (kullanılan, iki video da üretildi).**
+Kullanıcının hesabında mihenk isimli bir video-şablon editörü var
+(`beratakkaya034@gmail.com`, "AI oturumu kapalı" — riskli "AI'a bağlan" CLI
+köprüsü bilerek hiç açılmadı, önceki oturumda şüpheli/zararlı bulunup terk
+edilmişti, bkz. `[[project-mihenk-brag-promo-video]]`). Panelin **Stüdyo**
+(video şablon) modülü tamamen ayrı ve zararsız, saf tarayıcı tabanlı form
+doldurma.
+
+1. **"Launch" şablonu** ("jev x kit" projesi) — 30 sn, 8 sahne (Kanca/Sorun/
+   Tanıtım/Özellik 1-3/Sonuç/Kapanış), 20 metin alanının tamamı gerçek
+   jev-x-kit içeriğiyle dolduruldu (hook: "No Opus needed. / Just say yes.",
+   rotator: "Just needs one Choice/Score/Noul.", "The BELKİ gatekeeper",
+   canlı sayan "~19x" istatistiği, kapanışta **jev-x-kit.vercel.app** linkli
+   kart). Logo (`jev x kit logo v2.jpeg`) yüklendi, marka rengi logoya göre
+   ayarlandı. **İndirilen dosya:** `C:\Users\burak\Downloads\jev-x-kit--launch.mp4`
+   (30.0 sn, 1920×1080, 47.5 MB — kullanıcıya gönderilemedi, 30 MB sınırı
+   aşılıyor, ama Downloads'ta duruyor).
+2. **"Stretch" şablonu** — 25.4 sn, 10 sahne (Yazma/Uzama/İstem/Pencere/
+   Cümle/Telefon/Tepkiler/Başlık/Halka/İmza), 15 metin alanının tamamı
+   dolduruldu (gerçek CLI sorusu "run tsc first?" yazma animasyonu, "Just
+   Confidence." uzayan kelime, "Which library should I use?" prompt çubuğu,
+   "One float decides everything.", "A $0 decision layer for agents.",
+   "Calibrated." + "$0" halka, kapanışta **jev-x-kit.vercel.app** + "Visit
+   Site" düğmesi). Logo yüklenmedi (bkz. aşağıdaki teknik not), marka rengi
+   yine de kodla (#ef2fb0) ayarlandı. **İndirilen dosya:**
+   `C:\Users\burak\Downloads\jev-x-kit-stretch.mp4` (25.45 sn, 1920×1080,
+   35.9 MB — aynı şekilde gönderilemedi, Downloads'ta duruyor).
+
+**Teknik notlar / öğrenilenler (ileride mihenk'le tekrar çalışılırsa geçerli):**
+- **Native renk seçici tarayıcı otomasyonunu tamamen dondurabiliyor**
+  (`Page.captureScreenshot` 30 sn timeout). Native `<input type="color">`'a
+  hiç tıklamadan, doğrudan JS ile (`HTMLInputElement.prototype` value
+  setter'ı + `input`/`change` event dispatch) değer atamak sorunsuz çalışıyor
+  ve dondurma riskini tamamen ortadan kaldırıyor — bundan sonra hep bu yöntem
+  kullanılmalı.
+- **Sol paneldeki metin alanlarına sabit piksel koordinatıyla art arda
+  tıklamak güvenilir değil** — bir alana odaklanmak önizlemeyi o sahneye
+  kaydırdığı için liste kayıyor ve sonraki tıklamalar yanlış alana gidiyor
+  (bir seferinde "Just yes or no" yanlışlıkla Adres alanına yazılmıştı).
+  Doğru yöntem: her alan için taze `find`/`read_page` ile ref almak (ref
+  bazlı tıklama scroll'dan etkilenmiyor).
+- **`file_upload` aracı bu ortamda artık dosya yolu (`paths`) kabul
+  etmiyor** ("must read the file and pass its contents via the `files`
+  parameter" hatası veriyor) — muhtemelen extension/host sürüm uyuşmazlığı.
+  Base64 ile JS'e gömme de pratik değil: 46 KB'lık bir JPEG'in base64'ü
+  (~63 KB metin) okuma+yazma olarak ~170.000+ token'a mal oluyor (base64
+  karakter başına ~2.6 token). Küçük dosyalar için bile mantıklı değil.
+- **Mihenk'in bazı metin alanları boşluk tuşunu kasıtlı engelliyor**
+  (Stretch şablonunda "Harflerden toplanan cümle" ve "vurgulu son" alanları
+  gibi — muhtemelen tek-kelime harf-uçuşma efekti için). Gerçek klavye
+  `type` eylemi bu alanlarda boşlukları tamamen siliyor ("no opus needed" →
+  "noopusneeded"); React'ın native value setter'ı + `input` event dispatch
+  ile JS'ten yazmak bu engeli bypass edip boşlukları koruyabiliyor — ama
+  React state'i stale DOM referansı yüzünden bazen (4/15 alanda) JS
+  atamasını da reddedip eski placeholder'da kalabiliyor. Netice: bu tip
+  "tek kelime" alanlarına baştan tek kelimelik içerik planlamak (boşluksuz)
+  en sağlam çözüm; JS'ten yazmak çoğu alanda (10/15, 10/20) tek seferde
+  işe yaradı ve klavyeyle tek tek yazmaktan çok daha hızlıydı.
+- Video render'ı sırasında (`MP4 indir` sonrası) sekme birkaç kez
+  `Page.captureScreenshot` timeout'u veriyor (muhtemelen render canvas/
+  WebCodecs ana thread'i meşgul ediyor) — dondurma değil, birkaç saniye
+  bekleyip tekrar denemek ya da doğrudan `~/Downloads` klasörünü kontrol
+  etmek yeterli, video arka planda gerçekten hazırlanmaya devam ediyor.
