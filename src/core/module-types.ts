@@ -352,3 +352,47 @@ export interface SanitizeReport {
   totalRedactions: number;
   safeForExternalModel: boolean;
 }
+
+/* Module — Claude Skills discovery & routing ------------------------------ */
+
+export type SkillSource = "self" | "project" | "user" | "plugin-cache" | "plugin-marketplace";
+
+export interface SkillEntry {
+  name: string;
+  description: string;
+  source: SkillSource;
+  path: string;
+  installed: true;
+}
+
+/**
+ * One marketplace-listed plugin not yet installed locally. Represents a whole
+ * plugin (marketplace.json granularity, which may bundle >=1 skill) — we only
+ * have plugin-level metadata for anything we haven't installed.
+ */
+export interface CatalogSkillEntry {
+  name: string;
+  description: string;
+  marketplace: string;
+  homepage?: string;
+  uniqueInstalls?: number;
+  /** True when this entry came from the public fallback fetch, not a local marketplace.json. */
+  viaRemoteFallback: boolean;
+  installed: false;
+}
+
+export interface SkillMatch<T> {
+  entry: T;
+  relevance: ScoreResult;
+  installCommand?: string[];
+}
+
+export interface SkillRouterReport {
+  task: string;
+  zone: "execute" | "speculative";
+  matches: Array<SkillMatch<SkillEntry>>;
+  catalogMatches: Array<SkillMatch<CatalogSkillEntry>>;
+  scannedDirs: string[];
+  usedRemoteCatalog: boolean;
+  latencyMs: number;
+}
