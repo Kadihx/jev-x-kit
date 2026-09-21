@@ -70,7 +70,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): JevConfig {
           ? "https://ai-gateway.vercel.sh/v1"
           : "https://api.typesafe.ai/v1"),
       apiKey: env.TYPESAFE_JEV_API_KEY ?? env.VERCEL_AI_GATEWAY_KEY,
-      model: env.TYPESAFE_JEV_MODEL ?? "typesafe/jev",
+      model: env.TYPESAFE_JEV_MODEL ?? "jev-latest",
     },
     openjev: {
       // razorback16/openjev: docker run --gpus all -p 8000:8000 razorback16/openjev

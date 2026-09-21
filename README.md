@@ -85,9 +85,11 @@ Add this to your agent's MCP config (`mcp-config.json`, `claude_desktop_config.j
 | **LayA** (`NandhaKishorM/laya`) | `python -m laya.serve --port 8000` | **$0** |
 | **Ollama** (System-2 LLM for planner/red-team) | `ollama serve` (default `:11434`) | **$0** |
 | **Vercel AI Gateway free tier** | set `VERCEL_AI_GATEWAY_KEY` | free tier |
-| **TypeSafe Jev native** | `TYPESAFE_JEV_API_KEY` + `TYPESAFE_JEV_NATIVE=1` | $0.042 / 1M in |
+| **TypeSafe Jev native** | `TYPESAFE_JEV_API_KEY` + `TYPESAFE_JEV_NATIVE=1` (**required** — see below) | $0.042 / 1M in, $0 output |
 
 Set `JEV_BACKEND_PROVIDER` to `auto` (default), `typesafe_jev`, `openjev_local`, `laya_local` or `heuristic` (fully offline).
+
+**`TYPESAFE_JEV_NATIVE=1` is not optional for the hosted API.** TypeSafe's real API is a single `POST /v1/systemone` endpoint (state + named questions in, named answers + token usage out) — there is no `/chat/completions` endpoint at `api.typesafe.ai`, so without the native flag the chat-proxy transport 404s and every call silently falls back to the offline heuristic. Verified live on 2026-09-21: a 12-candidate `jev_research` run cost **$0.00016874** in real TypeSafe API usage. Note the hosted API only answers Choice/Score/Noul — it has no chat/completion endpoint, so point `JEV_LLM_BASE_URL` at Ollama/vLLM/etc. regardless, for planner/red-team/research-synthesis text generation.
 
 ## CLI (scriptable, zero MCP client needed)
 

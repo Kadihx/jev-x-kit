@@ -179,6 +179,32 @@ Repo public: **https://github.com/Kadihx/jev-x-kit** (gh ile oluşturuldu + push
   güvenlik ağı. `tests/core.test.mjs`'e deterministik test eklendi (3 çift:
   keep/drop/anchor-override), 28/28 yeşil.
 
+## 3c. TypeSafe Jev entegrasyonu düzeltildi (2026-09-21) — daha önce hiç çalışmıyormuş
+
+Kullanıcı gerçek bir TypeSafe API key aldı, test edilirken **iki gerçek bug**
+bulundu ve düzeltildi (gerçek key ile, `https://api.typesafe.ai/openapi.json`
+canlı şemasına karşı doğrulandı):
+
+1. `src/core/providers/typesafe-native.ts` tamamen yanlış bir API şekli
+   varsayıyordu (ayrı `/choice /score /noul` uçları). Gerçek API tek bir
+   `POST /v1/systemone` — paylaşılan bir `state` + adlandırılmış sorular
+   map'i alıyor, adlandırılmış cevaplar + token kullanımı dönüyor. Sağlam
+   şekilde yeniden yazıldı: aynı `state`'i paylaşan istekler tek çağrıda
+   gruplanıyor (gerçek batching), farklı `state`'liler ayrı (eşzamanlı)
+   çağrı oluyor.
+2. `config.ts`'teki varsayılan model adı `"typesafe/jev"` yanlıştı — gerçek
+   modeller `jev-latest` / `jev-preview` (`GET /v1/models`'tan doğrulandı).
+   `"jev-latest"` olarak düzeltildi.
+
+**Canlı doğrulama:** 12 adaylı gerçek bir `jev_research` koşusu → **12/12
+gerçek çağrı**, toplam maliyet **$0.00016874**. `TYPESAFE_JEV_NATIVE=1`
+artık README'de "zorunlu" olarak işaretli — bayrak olmadan chat-proxy modu
+sessizce heuristic'e düşüyordu (hosted API'de `/chat/completions` yok).
+
+⚠️ Kullanıcı gerçek API key'ini sohbet içinde paylaştı — asla dosyaya/repoya
+yazılmadı, sadece tek seferlik env var olarak kullanıldı, ama sohbet geçmişinde
+düz metin olarak duruyor. Rotasyon önerildi.
+
 ## 4. Bundan sonra kalanlar (öncelik sırasıyla)
 
 1. **Retrieval kalitesi:** Noul relevance skorlamasını da gerçek bir backend'e
