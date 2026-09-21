@@ -9,6 +9,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir, platform } from "node:os";
@@ -75,6 +76,36 @@ for (const target of targets) {
   writeFileSync(target.file, JSON.stringify(config, null, 2) + "\n", "utf8");
   console.log(`added ${target.name}: ${target.file}${existing ? " (backup: " + target.file + ".bak)" : " (created)"}`);
   changed++;
+}
+
+// `claude` is a `.cmd` shim on Windows. Node refuses to spawn .bat/.cmd
+// directly without shell:true (a deliberate post-CVE-2024-27980 restriction);
+// with shell:true Node itself applies the corresponding argv-escaping for
+// batch files, so this is the correct/required form here, not a shortcut.
+// All args below are fixed literals or a locally-computed path — no
+// external/user input reaches this argv, so the concatenation DEP0190 warns
+// about is not exploitable in this call.
+const useShell = process.platform === "win32";
+
+try {
+  execFileSync("claude", ["mcp", "get", "jev-super-agent"], { stdio: "pipe", shell: useShell });
+  console.log("ok    Claude Code: already registered");
+} catch (err) {
+  if (err.code === "ENOENT") {
+    console.log("skip  Claude Code: `claude` CLI not found on PATH");
+  } else {
+    try {
+      execFileSync(
+        "claude",
+        ["mcp", "add", "jev-super-agent", "-s", "user", "-e", "JEV_BACKEND_PROVIDER=auto", "--", "node", entryPoint],
+        { stdio: "inherit", shell: useShell },
+      );
+      console.log("added Claude Code: registered jev-super-agent (user scope)");
+      changed++;
+    } catch {
+      console.log("skip  Claude Code: `claude mcp add` failed (see output above)");
+    }
+  }
 }
 
 if (!existsSync(entryPoint)) {
