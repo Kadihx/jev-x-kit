@@ -6,7 +6,10 @@
  * All defaults are 100% free / local friendly.
  */
 
+import { loadDotEnv } from "./dotenv.js";
 import type { BackendProviderId, GatekeeperPolicy } from "./types.js";
+
+loadDotEnv();
 
 const num = (value: string | undefined, fallback: number): number => {
   const parsed = Number(value);
