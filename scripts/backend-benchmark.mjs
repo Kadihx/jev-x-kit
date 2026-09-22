@@ -116,6 +116,9 @@ async function candidateBackends() {
     layaReason = `unreachable: ${error?.message ?? String(error)}`;
   }
   candidates.push({ backend: laya, reachable: layaReachable, reason: layaReason });
+  // Real LayA was installed and tested separately (Python: torch+transformers,
+  // not this Node runtime) -- see scripts/laya-benchmark.py and
+  // artifacts/laya-benchmark-report.md for actual accuracy/latency numbers.
 
   if (config.typesafe.apiKey) {
     const typesafeJev = new NativeJevBackend({

@@ -4,6 +4,7 @@ artifacts/*
 !artifacts/ESPORTS-INTELLIGENCE-REPORT.md
 !artifacts/esports-intel-report.json
 !artifacts/backend-benchmark-report.md
+!artifacts/laya-benchmark-report.md
 data/*.sqlite*
 .jev/
 .jev-skill-memory.json
