@@ -181,6 +181,31 @@ async function benchOne(backend, battery) {
   return { perQuestion, avgLatencyMs, avgConfidence, errorCount: perQuestion.length - ok.length };
 }
 
+/**
+ * Same battery, ONE call to backend.batch() instead of N sequential
+ * backend[kind]() calls. This is what actually using jev-x-kit's fan-out
+ * looks like: same-state requests get merged into a single HTTP call
+ * (see typesafe-native.ts's grouping) and different-state requests run
+ * concurrently via mapLimit — vs benchOne's naive one-at-a-time loop, which
+ * is what you'd get calling a raw API per question without the kit.
+ */
+async function benchBatched(backend, battery) {
+  const started = performance.now();
+  let results = null;
+  let error = null;
+  try {
+    results = await backend.batch(battery);
+  } catch (e) {
+    error = e?.message ?? String(e);
+  }
+  const totalMs = round2(performance.now() - started);
+  return {
+    totalMs,
+    error,
+    avgPerQuestionMs: results ? round2(totalMs / battery.length) : null,
+  };
+}
+
 const round2 = (n) => Math.round(n * 100) / 100;
 const round4 = (n) => Math.round(n * 10000) / 10000;
 
@@ -215,6 +240,14 @@ function buildReport(results, skipped, battery) {
     "Latency is wall-clock per single (non-batched) primitive call, measured with `performance.now()` around the " +
       "exact request. Calibration signals (confidence / probability / score / selected option) are whatever the " +
       "backend actually returned — nothing here is a synthesized accuracy or quality number.",
+  );
+  lines.push("");
+  lines.push(
+    "**Read this table for latency, not correctness.** `heuristic` is jev-x-kit's own deterministic $0 offline " +
+      "fallback — it is *supposed* to be near-instant and is *not* supposed to be factually smart (it has no real " +
+      "knowledge, only cheap text heuristics), so a low latency + wrong answers here is expected, not a defect. " +
+      "It is easy to misread this as \"the fast backend is inaccurate\" and assume that's LayA — it is not; LayA is a " +
+      "separate row (or a Skipped entry, see below) and was never confused with heuristic in this data.",
   );
   lines.push("");
 
@@ -282,6 +315,29 @@ function buildReport(results, skipped, battery) {
     lines.push("");
   }
 
+  lines.push("## Sequential calls vs jev-x-kit's `batch()` — is the kit actually speeding things up?");
+  lines.push("");
+  lines.push(
+    "Same battery, two ways of driving the same backend: `sequential` calls `.choice()/.score()/.noul()` once per " +
+      "question, one at a time — what a naive integration looks like *without* using jev-x-kit's fan-out. `batch()` " +
+      "sends the whole battery through jev-x-kit's own `backend.batch()` in one call — same-state questions merge " +
+      "into a single HTTP request (see `typesafe-native.ts`'s state-grouping) and different-state questions run " +
+      "concurrently. This isolates the kit's own contribution from raw network/model latency.",
+  );
+  lines.push("");
+  lines.push("| backend | sequential total (ms) | batch() total (ms) | speedup |");
+  lines.push("|---|---|---|---|");
+  for (const r of results) {
+    const seqTotal = r.perQuestion.reduce((s, q) => s + q.latencyMs, 0);
+    const seqTotalR = round2(seqTotal);
+    const batchTotal = r.batched.error ? null : r.batched.totalMs;
+    const speedup = batchTotal && batchTotal > 0 ? `${round2(seqTotal / batchTotal)}x` : "n/a";
+    lines.push(
+      `| ${r.backend} | ${seqTotalR} | ${r.batched.error ? `ERROR: ${r.batched.error}` : batchTotal} | ${speedup} |`,
+    );
+  }
+  lines.push("");
+
   lines.push("## Skipped");
   lines.push("");
   if (skipped.length === 0) {
@@ -307,12 +363,14 @@ async function main() {
       continue;
     }
     const bench = await benchOne(backend, BATTERY);
+    const batched = await benchBatched(backend, BATTERY);
     results.push({
       backend: backend.meta.id,
       label: backend.meta.label,
       local: backend.meta.local,
       synthetic: backend.meta.synthetic,
       ...bench,
+      batched,
     });
   }
 
