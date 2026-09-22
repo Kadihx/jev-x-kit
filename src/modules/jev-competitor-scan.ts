@@ -83,7 +83,8 @@ async function searchGithubPage(
  * search API's rate limit (10 req/min unauthenticated, 30 req/min with a
  * token) instead of bursting and getting 403'd partway through a scan.
  */
-async function searchGithub(
+/** Exported for reuse by other GitHub-search consumers (e.g. general topic research scripts) that need the raw, paginated, rate-limited search without the competitor-specific "does this compete with us" framing below. */
+export async function searchGithub(
   query: string,
   opts: { windowDays?: number; sortBy?: "stars" | "created" | "updated"; pages?: number; perPage?: number; githubToken?: string },
 ): Promise<RawRepo[]> {
