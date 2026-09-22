@@ -127,6 +127,7 @@ async function main(): Promise<void> {
         bytesOut: report.bytesOut,
         savedPct: report.bytesIn > 0 ? Math.round((1 - report.bytesOut / report.bytesIn) * 1000) / 10 : 0,
         preservedAnchors: report.preservedAnchors,
+        compacted: report.compacted,
       });
       return;
     }
