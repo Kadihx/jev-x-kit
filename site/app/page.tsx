@@ -524,15 +524,59 @@ npm run smoke       # 69-check end-to-end MCP client test`}
           </div>
 
           <p className="mt-6 text-sm leading-relaxed text-ink/70">
-            Also verified real vs. imaginary this session: <strong>LayA</strong>{" "}
-            turns out to really exist — an open-source, self-hosted
-            ModernBERT + RLCD decision model (
+            <strong>LayA</strong> turns out to really exist — an open-source,
+            self-hosted 421M ModernBERT + RLCD decision model (
             <a className="underline" href="https://github.com/NandhaKishorM/laya" target="_blank" rel="noreferrer">
               github.com/NandhaKishorM/laya
             </a>
-            ) — but it publishes no hosted endpoint, so it&apos;s not in the
-            table above until it&apos;s actually running locally. No number is
-            invented for a backend that wasn&apos;t reachable.
+            ) — so we installed it and ran the exact same 10-question battery
+            against it, on this (GPU-less, CPU-only) machine:
+          </p>
+
+          <div className="win-shadow mt-4 overflow-x-auto border border-ink/80 bg-paper">
+            <table className="w-full min-w-[560px] text-left text-xs">
+              <thead className="bg-bar text-paper">
+                <tr>
+                  <th className="px-3 py-2 font-bold">Backend</th>
+                  <th className="px-3 py-2 font-bold">ms / question (batched)</th>
+                  <th className="px-3 py-2 font-bold">correct (4 factual Qs)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["typesafe_jev (real API)", "82.1ms", "4/4"],
+                  ["laya (local, CPU)", "183.9ms", "2/4"],
+                ].map((row, i) => (
+                  <tr key={row[0]} className={i % 2 ? "bg-ink/5" : ""}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="px-3 py-2 font-mono">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="mt-4 text-[11px] leading-relaxed text-ink/50">
+            Not a clean win for either side: this machine has no GPU (LayA
+            publishes ~33–38ms/question on GPU, so these are CPU-bound
+            numbers), and the battery is open-domain trivia — LayA&apos;s own
+            model card lists its strengths as email triage, moderation and
+            classification, not general knowledge, so this plays to a hosted
+            LLM API&apos;s strengths more than LayA&apos;s. Reproduce it
+            yourself with <code>scripts/laya-benchmark.py</code>; full
+            numbers in{" "}
+            <a
+              className="underline"
+              href="https://github.com/Kadihx/jev-x-kit/blob/main/artifacts/laya-benchmark-report.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              artifacts/laya-benchmark-report.md
+            </a>
+            .
           </p>
 
           <p className="mt-4 text-[11px] leading-relaxed text-ink/50">
