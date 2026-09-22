@@ -1,6 +1,6 @@
 # jev-x-kit backend benchmark report
 
-Generated: 2026-09-22T06:41:37.416Z
+Generated: 2026-09-22T12:41:12.151Z
 
 jev-x-kit is the constant measuring harness in this report — it is never one of the compared entries. The comparison is between the `JevBackend` implementations it can resolve (heuristic, laya_local and, only when run locally with a real key, typesafe_jev).
 
@@ -24,24 +24,39 @@ The real `cerebellum-ai` npm package / `theredsix/cerebellum` GitHub repo exists
 
 | backend | label | local | synthetic | avg latency (ms) | avg confidence | errors |
 |---|---|---|---|---|---|---|
-| heuristic | Deterministic offline Jev simulator (free, no network) | true | true | 0.24 | 0.4834 | 0 |
+| heuristic | Deterministic offline Jev simulator (free, no network) | true | true | 0.21 | 0.4834 | 0 |
+| typesafe_jev | TypeSafe Jev API (POST /v1/systemone) | false | false | 334.17 | 0.907 | 0 |
 
 ### heuristic — per-question detail
 
 | # | kind | question | latency (ms) | confidence | probability | score | selected |
 |---|---|---|---|---|---|---|---|
-| 1 | choice | What is the capital of France? | 0.96 | 0.25309 |  |  | Berlin |
-| 2 | choice | Which of these numbers is prime? | 0.14 | 0.25391 |  |  | 7 |
-| 3 | choice | Which planet is closest to the sun? | 0.05 | 0.252264 |  |  | Earth |
-| 4 | choice | In HTTP, which status code means 'not found'? | 0.11 | 0.256094 |  |  | 301 |
+| 1 | choice | What is the capital of France? | 0.89 | 0.25309 |  |  | Berlin |
+| 2 | choice | Which of these numbers is prime? | 0.11 | 0.25391 |  |  | 7 |
+| 3 | choice | Which planet is closest to the sun? | 0.09 | 0.252264 |  |  | Earth |
+| 4 | choice | In HTTP, which status code means 'not found'? | 0.04 | 0.256094 |  |  | 301 |
 | 5 | choice | Which storage fits an offline-first, single-user MCP agent? | 0.06 | 0.340318 |  |  | hosted mongo |
-| 6 | score | How maintainable is a module with 95% test coverage and type | 0.32 | 0.97 |  | 10 |  |
-| 7 | score | Severity of the worst plausible outcome if this tool call ex | 0.03 | 0.6217 |  | 5.396 |  |
-| 8 | score | Clarity of this ad copy on a 1-10 scale. | 0.03 | 0.658 |  | 5.318 |  |
-| 9 | noul | Will this change cause a regression in production? | 0.5 | 0.99 | 0.0386 |  |  |
-| 10 | noul | Does this action irreversibly alter external state, data or  | 0.15 | 0.239 | 0.4555 |  |  |
+| 6 | score | How maintainable is a module with 95% test coverage and type | 0.24 | 0.97 |  | 10 |  |
+| 7 | score | Severity of the worst plausible outcome if this tool call ex | 0.05 | 0.6217 |  | 5.396 |  |
+| 8 | score | Clarity of this ad copy on a 1-10 scale. | 0.06 | 0.658 |  | 5.318 |  |
+| 9 | noul | Will this change cause a regression in production? | 0.43 | 0.99 | 0.0386 |  |  |
+| 10 | noul | Does this action irreversibly alter external state, data or  | 0.12 | 0.239 | 0.4555 |  |  |
+
+### typesafe_jev — per-question detail
+
+| # | kind | question | latency (ms) | confidence | probability | score | selected |
+|---|---|---|---|---|---|---|---|
+| 1 | choice | What is the capital of France? | 784.02 | 1 |  |  | Paris |
+| 2 | choice | Which of these numbers is prime? | 281.58 | 1 |  |  | 7 |
+| 3 | choice | Which planet is closest to the sun? | 283.66 | 1 |  |  | Mercury |
+| 4 | choice | In HTTP, which status code means 'not found'? | 275.7 | 1 |  |  | 404 |
+| 5 | choice | Which storage fits an offline-first, single-user MCP agent? | 268.91 | 1 |  |  | sqlite |
+| 6 | score | How maintainable is a module with 95% test coverage and type | 275.7 | 0.61 |  | 8.44 |  |
+| 7 | score | Severity of the worst plausible outcome if this tool call ex | 306.34 | 0.93 |  | 9.82 |  |
+| 8 | score | Clarity of this ad copy on a 1-10 scale. | 282 | 0.63 |  | 8.59 |  |
+| 9 | noul | Will this change cause a regression in production? | 279.7 | 0.91 | 0.12 |  |  |
+| 10 | noul | Does this action irreversibly alter external state, data or  | 304.12 | 0.99 | 0.02 |  |  |
 
 ## Skipped
 
-- **typesafe_jev**: explicitly skipped in this cloud run: the real TypeSafe Jev API key lives only in the developer's local, gitignored .env on their personal machine. It is not present in this sandbox and was never committed to the repo; per instructions it was never guessed, requested or fabricated, and no numbers are reported for this backend. Run `node scripts/backend-benchmark.mjs` locally with that .env in place (TYPESAFE_JEV_API_KEY set) to add a real typesafe_jev row to this report.
 - **laya_local**: health check to http://localhost:8000/v1/models did not return 200

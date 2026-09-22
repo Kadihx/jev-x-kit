@@ -17,13 +17,15 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const importAbs = (relPath) => import(pathToFileURL(path.join(root, relPath)).href);
 
-const { HeuristicBackend } = await import(path.join(root, "dist/core/providers/heuristic.js"));
-const { ChatCompatibleBackend } = await import(path.join(root, "dist/core/providers/chat-compatible.js"));
-const { loadConfig } = await import(path.join(root, "dist/core/config.js"));
+const { HeuristicBackend } = await importAbs("dist/core/providers/heuristic.js");
+const { ChatCompatibleBackend } = await importAbs("dist/core/providers/chat-compatible.js");
+const { NativeJevBackend } = await importAbs("dist/core/providers/typesafe-native.js");
+const { loadConfig } = await importAbs("dist/core/config.js");
 
 const config = loadConfig();
 
@@ -114,6 +116,33 @@ async function candidateBackends() {
     layaReason = `unreachable: ${error?.message ?? String(error)}`;
   }
   candidates.push({ backend: laya, reachable: layaReachable, reason: layaReason });
+
+  if (config.typesafe.apiKey) {
+    const typesafeJev = new NativeJevBackend({
+      baseUrl: config.typesafe.baseUrl,
+      apiKey: config.typesafe.apiKey,
+      model: config.typesafe.model,
+    });
+    let typesafeReachable = false;
+    let typesafeReason;
+    try {
+      typesafeReachable = await typesafeJev.health();
+      typesafeReason = typesafeReachable
+        ? `reachable at ${config.typesafe.baseUrl}`
+        : `health check to ${config.typesafe.baseUrl}/models did not return 200`;
+    } catch (error) {
+      typesafeReason = `unreachable: ${error?.message ?? String(error)}`;
+    }
+    candidates.push({ backend: typesafeJev, reachable: typesafeReachable, reason: typesafeReason, isTypesafe: true });
+  } else {
+    candidates.push({
+      backend: { meta: { id: "typesafe_jev" } },
+      reachable: false,
+      reason:
+        "no TYPESAFE_JEV_API_KEY / VERCEL_AI_GATEWAY_KEY in this environment's .env — not guessed or fabricated",
+      isTypesafe: true,
+    });
+  }
 
   return candidates;
 }
@@ -270,18 +299,7 @@ function buildReport(results, skipped, battery) {
 /* ------------------------------------- main -------------------------------------- */
 
 async function main() {
-  const skipped = [
-    {
-      backend: "typesafe_jev",
-      reason:
-        "explicitly skipped in this cloud run: the real TypeSafe Jev API key lives only in the developer's " +
-        "local, gitignored .env on their personal machine. It is not present in this sandbox and was never " +
-        "committed to the repo; per instructions it was never guessed, requested or fabricated, and no numbers " +
-        "are reported for this backend. Run `node scripts/backend-benchmark.mjs` locally with that .env in place " +
-        "(TYPESAFE_JEV_API_KEY set) to add a real typesafe_jev row to this report.",
-    },
-  ];
-
+  const skipped = [];
   const results = [];
   for (const { backend, reachable, reason } of await candidateBackends()) {
     if (!reachable) {
