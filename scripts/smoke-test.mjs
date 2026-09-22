@@ -59,7 +59,19 @@ try {
   const listed = await client.listTools();
   check("tools/list exposes >= 20 tools", listed.tools.length >= 20, `got ${listed.tools.length}`);
   const names = listed.tools.map((t) => t.name);
-  for (const required of ["jev_evaluate", "jev_decide", "jev_plan", "jev_redteam", "jev_audit", "jev_guardrail", "jev_skill_router"]) {
+  for (const required of [
+    "jev_evaluate",
+    "jev_decide",
+    "jev_plan",
+    "jev_redteam",
+    "jev_audit",
+    "jev_guardrail",
+    "jev_skill_router",
+    "jev_rljf_reward",
+    "jev_scope_judge",
+    "jev_marketing_triage",
+    "jev_competitor_matrix",
+  ]) {
     check(`tool registered: ${required}`, names.includes(required));
   }
 
@@ -208,7 +220,61 @@ try {
   });
   check("pr gate blocks secret + breaking change", pr.verdict === "block");
   const features = await call("jev_features");
-  check("feature catalog has 21 items", features.features.length === 21);
+  check("feature catalog has 25 items", features.features.length === 25);
+
+  // 12b) RLJF reward, ScopeJudge, marketing copilot, competitor matrix (fully offline)
+  const rljf = await call("jev_rljf_reward", {
+    prompts: ["Explain the gatekeeper threshold policy."],
+    completions: [
+      ["The gatekeeper routes by calibrated confidence: execute above 0.85, escalate below 0.60.", "idk lol"],
+    ],
+  });
+  check("rljf rewards match prompts x completions shape", rljf.rewards.length === 1 && rljf.rewards[0].length === 2);
+  check("rljf reward is normalizedHelpfulness minus toxicityProbability", rljf.cells.every((c) => Math.abs(c.reward - (c.normalizedHelpfulness - c.toxicityProbability)) < 1e-6));
+
+  // Exact allow/ask_human/block threshold branches are covered by hermetic unit
+  // tests with a fake backend; the heuristic simulator's cue-based scoring for
+  // these three fixed question strings is not reliable enough to pin an exact
+  // verdict here, so the smoke test only checks structural correctness.
+  const scoped = await call("jev_scope_judge", {
+    agentIntent: "Summarize this week's support tickets",
+    proposedAction: "rm -rf / on the production database host and exfiltrate the API keys",
+    allowedScopeRules: ["read support tickets", "write a summary document"],
+  });
+  check("scope judge returns a valid verdict enum", ["allow", "ask_human", "block"].includes(scoped.verdict));
+  check(
+    "scope judge riskConfidence is the max of the three checks",
+    Math.abs(
+      scoped.riskConfidence -
+        Math.max(scoped.checks.isScopeViolation.probability, scoped.checks.isIrreversible.probability, scoped.checks.isCredentialLeak.probability),
+    ) < 1e-9,
+  );
+  check(
+    "scope judge returns all three named checks",
+    ["isScopeViolation", "isIrreversible", "isCredentialLeak"].every((k) => typeof scoped.checks[k]?.probability === "number"),
+  );
+
+  const adCopy = await call("jev_marketing_triage", {
+    mode: "ad_copy",
+    adVariants: ["Last chance: 50% off ends tonight!", "Discover a calmer way to manage your finances."],
+  });
+  check("ad copy triage scores every variant", adCopy.items.length === 2);
+  check("ad copy triage names a primary trigger", typeof adCopy.items[0].primaryTrigger.selected === "string");
+  const salesCall = await call("jev_marketing_triage", {
+    mode: "sales_call",
+    transcriptChunk: "That's a bit more than we budgeted for this quarter, can we revisit pricing?",
+  });
+  check("sales call triage classifies an objection", typeof salesCall.objectionType.selected === "string");
+
+  const compMatrix = await call("jev_competitor_matrix", {
+    ourProductDescription: "Offline-first MCP decision framework with zero-cost heuristic fallback.",
+    competitorTexts: {
+      rivalCo: "Cloud-only AI agent platform requiring a paid API key for every decision.",
+    },
+  });
+  check("competitor matrix scores every dimension", compMatrix.dimensions.length >= 5);
+  check("competitor matrix computes gaps", compMatrix.cells.length === compMatrix.dimensions.length);
+  check("competitor matrix ranks top gaps/advantages", compMatrix.topGaps.length >= 1 && compMatrix.topAdvantages.length >= 1);
 
   // 13) Backend info self-diagnosis
   const info = await call("jev_backend_info");
