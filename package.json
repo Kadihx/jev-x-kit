@@ -29,6 +29,7 @@
     "start": "node dist/index.js",
     "cli": "node dist/cli.js",
     "smoke": "node scripts/smoke-test.mjs",
+    "benchmark": "node scripts/backend-benchmark.mjs",
     "test:real": "node scripts/real-backend-test.mjs",
     "test:hub": "node --test \"tests/datacenter.test.mjs\"",
     "hub": "node dist/hub-cli.js",
