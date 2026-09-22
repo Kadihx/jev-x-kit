@@ -21,8 +21,12 @@ micro-decisions run through schema-validated primitives instead of free text.
 | Discover/rank Claude Skills for a task (installed + catalog) | `skills "<task>" [--online]` |
 | Pre-execution guardrail for a risky tool call | `guardrail --tool <tool> --args "<args>"` |
 | Run tsc+tests and record a reward for self-tuning | `verify --cwd .` |
+| TRL/GRPO reward from helpfulness - toxicity | `rljf --file <json with {prompts, completions}>` |
+| Guardrail an agent action against its allowed scope | `scope-judge --intent "<intent>" --action "<action>" --rules "rule1\|rule2"` |
+| Triage ad copy variants or a sales-call transcript | `marketing --mode ad_copy --variants "v1\|v2"` / `--mode sales_call --transcript "<chunk>"` |
+| Score us vs competitors across derived dimensions | `competitor-matrix --file <json with {ourProductDescription, competitorTexts}>` |
 
-Run `node dist/cli.js features` for the full 20-feature catalog and
+Run `node dist/cli.js features` for the full feature catalog and
 `node dist/cli.js info` to see which backend (local LLM / heuristic) is active.
 
 ## Notes

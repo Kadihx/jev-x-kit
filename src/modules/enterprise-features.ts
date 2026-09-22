@@ -31,6 +31,10 @@ export const FEATURES: FeatureDescriptor[] = [
   { id: 19, slug: "dependency-sandbox", name: "Dependency Upgrade Sandbox Simulator", status: "scaffolded", tool: "jev_guardrail", summary: "Simulate dependency bumps and gate risky upgrades." },
   { id: 20, slug: "pitch-deck-engine", name: "Pitch-Deck & Valuation Engine", status: "implemented", tool: "jev_redteam", summary: "Investor anti-theses generated and scored before the meeting." },
   { id: 21, slug: "skill-router", name: "Claude Skills Router", status: "implemented", tool: "jev_skill_router", summary: "Discovers installed + catalog Claude Skills and ranks them for a task via the Jev Score primitive." },
+  { id: 22, slug: "rljf-reward", name: "RLJF Reward Calculator", status: "implemented", tool: "jev_rljf_reward", summary: "TRL/GRPO-compatible reward = normalized helpfulness - toxicity probability, batched over every (prompt, completion) pair." },
+  { id: 23, slug: "scope-judge", name: "Agent Scope-Violation Guardrail", status: "implemented", tool: "jev_scope_judge", summary: "3-way Noul fan-out (scope violation, irreversibility, credential leak) into an allow/ask_human/block verdict." },
+  { id: 24, slug: "marketing-copilot", name: "Marketing Copilot", status: "implemented", tool: "jev_marketing_triage", summary: "Ad copy hook/clarity/resonance scoring + trigger classification, or sales-call objection/buying-signal triage." },
+  { id: 25, slug: "competitor-intelligence", name: "Competitor Intelligence Matrix", status: "implemented", tool: "jev_competitor_matrix", summary: "Scores our product and every competitor across derived dimensions in one batched pass and ranks the resulting gaps." },
 ];
 
 export function featureCatalog(): FeatureDescriptor[] {

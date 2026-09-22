@@ -24,6 +24,10 @@ import { ChiefOfStaff, ROLE_CATALOG } from "../modules/jev-dispatcher.js";
 import { CompetitorScanner } from "../modules/jev-competitor-scan.js";
 import { CalibrationChecker } from "../modules/jev-calibration.js";
 import { SkillRouter } from "../modules/jev-skill-router.js";
+import { RljfReward } from "../modules/rljf-reward.js";
+import { ScopeJudge } from "../modules/scope-judge.js";
+import { MarketingCopilot, type MarketingTriageInput } from "../modules/marketing-copilot.js";
+import { CompetitorIntelligence } from "../modules/competitor-intelligence.js";
 import type { CalibrationCase, TranscriptMessage } from "../core/module-types.js";
 import {
   edgeCases,
@@ -55,6 +59,10 @@ export interface AppContext {
   competitorScanner: CompetitorScanner;
   calibrationChecker: CalibrationChecker;
   skillRouter: SkillRouter;
+  rljfReward: RljfReward;
+  scopeJudge: ScopeJudge;
+  marketingCopilot: MarketingCopilot;
+  competitorIntelligence: CompetitorIntelligence;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -87,6 +95,10 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     competitorScanner: new CompetitorScanner({ backend, llm, githubToken: config.githubToken }),
     calibrationChecker: new CalibrationChecker({ backend, policy: config.policy }),
     skillRouter: new SkillRouter({ backend }),
+    rljfReward: new RljfReward({ backend }),
+    scopeJudge: new ScopeJudge({ backend }),
+    marketingCopilot: new MarketingCopilot({ backend }),
+    competitorIntelligence: new CompetitorIntelligence({ backend, llm }),
   };
 }
 
@@ -773,6 +785,93 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
         ourRepo: optStr(args, "ourRepo"),
         ourDescription: optStr(args, "ourDescription"),
       }),
+  });
+
+  tools.push({
+    name: "jev_rljf_reward",
+    title: "RLJF reward calculator (TRL/GRPO-compatible)",
+    description:
+      "Reinforcement Learning from Jev Feedback: score every (prompt, completion) pair for helpfulness and toxicity in two flat batched fan-outs, then combine into reward = normalizedHelpfulness - toxicityProbability. Drop-in reward_funcs for a TRL GRPOTrainer loop.",
+    inputSchema: schema(
+      {
+        prompts: arrayProp("Prompts.", { type: "string" }),
+        completions: arrayProp("completions[i] = candidate generations for prompts[i].", {
+          type: "array",
+          items: { type: "string" },
+        }),
+        emitScript: booleanProp("Write a runnable TRL GRPOTrainer boilerplate script to artifacts/rljf_grpo.py (default false)."),
+      },
+      ["prompts", "completions"],
+    ),
+    handler: async (args) => {
+      const completions = (args["completions"] as string[][] | undefined) ?? [];
+      return ctx.rljfReward.reward(strArray(args, "prompts"), completions, {
+        emitScript: boolArg(args, "emitScript", false),
+      });
+    },
+  });
+
+  tools.push({
+    name: "jev_scope_judge",
+    title: "Agent scope-violation guardrail (ScopeJudge)",
+    description:
+      "Classify a proposed agent action against its authorized scope rules with 3 parallel Noul checks (scope violation, irreversibility, credential leak) in one fan-out pass; returns allow / ask_human / block. Inspired by, not affiliated with, Dreadnode's ScopeJudge benchmark.",
+    inputSchema: schema(
+      {
+        agentIntent: stringProp("What the agent is trying to accomplish."),
+        proposedAction: stringProp("The concrete action the agent is about to take."),
+        allowedScopeRules: arrayProp("The rules defining the agent's authorized scope.", { type: "string" }),
+      },
+      ["agentIntent", "proposedAction", "allowedScopeRules"],
+    ),
+    handler: async (args) =>
+      ctx.scopeJudge.judge(str(args, "agentIntent"), str(args, "proposedAction"), strArray(args, "allowedScopeRules")),
+  });
+
+  tools.push({
+    name: "jev_marketing_triage",
+    title: "Marketing copilot (ad copy + sales-call triage)",
+    description:
+      "mode=ad_copy: batched Score (hookStrength/clarity/emotionalResonance) + batched Choice (primaryTrigger) over every ad variant. mode=sales_call: Choice (objectionType) + Noul (buyingSignalPresent) over a transcript chunk. Returns the raw primitive results plus a one-line recommendation per item.",
+    inputSchema: schema(
+      {
+        mode: { type: "string", enum: ["ad_copy", "sales_call"], description: "Which triage mode to run." },
+        adVariants: arrayProp("Ad copy variants (mode=ad_copy).", { type: "string" }),
+        transcriptChunk: stringProp("Sales call transcript chunk (mode=sales_call)."),
+      },
+      ["mode"],
+    ),
+    handler: async (args) => {
+      const mode = str(args, "mode") as MarketingTriageInput["mode"];
+      const input: MarketingTriageInput =
+        mode === "ad_copy"
+          ? { mode: "ad_copy", adVariants: strArray(args, "adVariants") }
+          : { mode: "sales_call", transcriptChunk: str(args, "transcriptChunk") };
+      return ctx.marketingCopilot.triage(input);
+    },
+  });
+
+  tools.push({
+    name: "jev_competitor_matrix",
+    title: "Competitor intelligence matrix",
+    description:
+      "Derive 5-8 comparison dimensions (System-2 hypothesis with a deterministic offline fallback) then rate our product and every competitor on every dimension in ONE batched Score pass. Returns the full matrix plus topGaps (largest gaps where we're behind) and topAdvantages (largest gaps where we're ahead), each with a one-line reason.",
+    inputSchema: schema(
+      {
+        ourProductDescription: stringProp("Our product's positioning/description."),
+        competitorTexts: {
+          type: "object",
+          description: "Map of competitor name -> description text.",
+          additionalProperties: { type: "string" },
+        },
+      },
+      ["ourProductDescription", "competitorTexts"],
+    ),
+    handler: async (args) =>
+      ctx.competitorIntelligence.matrix(
+        str(args, "ourProductDescription"),
+        (args["competitorTexts"] as Record<string, string> | undefined) ?? {},
+      ),
   });
 
   tools.push({

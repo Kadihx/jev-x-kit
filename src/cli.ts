@@ -14,6 +14,10 @@
  *   jev-super-agent-mcp redteam "<thesis>"
  *   jev-super-agent-mcp memory report|optimize|state
  *   jev-super-agent-mcp features
+ *   jev-super-agent-mcp rljf --file <json with {prompts, completions}> [--emitScript true]
+ *   jev-super-agent-mcp scope-judge --intent "<intent>" --action "<action>" --rules "rule1|rule2"
+ *   jev-super-agent-mcp marketing --mode ad_copy --variants "v1|v2" | --mode sales_call --transcript "<chunk>"
+ *   jev-super-agent-mcp competitor-matrix --file <json with {ourProductDescription, competitorTexts}>
  */
 
 import fs from "node:fs";
@@ -74,7 +78,7 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 29 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 33 });
       return;
 
     case "calibration": {
@@ -197,10 +201,56 @@ async function main(): Promise<void> {
       print((await import("./modules/enterprise-features.js")).featureCatalog());
       return;
 
+    case "rljf": {
+      const file = flags.get("file");
+      if (!file) throw new Error("rljf requires --file <json with {prompts, completions}>");
+      const { prompts, completions } = JSON.parse(fs.readFileSync(file, "utf8"));
+      print(await ctx.rljfReward.reward(prompts, completions, { emitScript: flags.get("emitScript") === "true" }));
+      return;
+    }
+
+    case "scope-judge":
+      print(
+        await ctx.scopeJudge.judge(
+          flags.get("intent") ?? positionals.join(" "),
+          flags.get("action") ?? "",
+          (flags.get("rules") ?? "").split("|").filter(Boolean),
+        ),
+      );
+      return;
+
+    case "marketing": {
+      const mode = flags.get("mode") ?? "ad_copy";
+      if (mode === "sales_call") {
+        print(
+          await ctx.marketingCopilot.triage({
+            mode: "sales_call",
+            transcriptChunk: flags.get("transcript") ?? positionals.join(" "),
+          }),
+        );
+      } else {
+        print(
+          await ctx.marketingCopilot.triage({
+            mode: "ad_copy",
+            adVariants: (flags.get("variants") ?? "").split("|").filter(Boolean),
+          }),
+        );
+      }
+      return;
+    }
+
+    case "competitor-matrix": {
+      const file = flags.get("file");
+      if (!file) throw new Error("competitor-matrix requires --file <json with {ourProductDescription, competitorTexts}>");
+      const { ourProductDescription, competitorTexts } = JSON.parse(fs.readFileSync(file, "utf8"));
+      print(await ctx.competitorIntelligence.matrix(ourProductDescription, competitorTexts));
+      return;
+    }
+
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills | rljf | scope-judge | marketing | competitor-matrix\n",
       );
       process.exitCode = command ? 1 : 0;
   }
