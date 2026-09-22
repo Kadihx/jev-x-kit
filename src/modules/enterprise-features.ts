@@ -35,6 +35,8 @@ export const FEATURES: FeatureDescriptor[] = [
   { id: 23, slug: "scope-judge", name: "Agent Scope-Violation Guardrail", status: "implemented", tool: "jev_scope_judge", summary: "3-way Noul fan-out (scope violation, irreversibility, credential leak) into an allow/ask_human/block verdict." },
   { id: 24, slug: "marketing-copilot", name: "Marketing Copilot", status: "implemented", tool: "jev_marketing_triage", summary: "Ad copy hook/clarity/resonance scoring + trigger classification, or sales-call objection/buying-signal triage." },
   { id: 25, slug: "competitor-intelligence", name: "Competitor Intelligence Matrix", status: "implemented", tool: "jev_competitor_matrix", summary: "Scores our product and every competitor across derived dimensions in one batched pass and ranks the resulting gaps." },
+  { id: 26, slug: "jarvis-triage", name: "JARVIS-style Intent Triage", status: "implemented", tool: "jev_jarvis_triage", summary: "One Noul + one Choice fan-out call routes a command-bar/voice/chatbot request local ($0) or to System-2." },
+  { id: 27, slug: "jarvis-auto-plan", name: "JARVIS-style Auto-Plan Extractor", status: "implemented", tool: "jev_jarvis_auto_plan", summary: "Winnow-compacts an agent log, extracts completed/pending tasks, prioritizes pending ones, emits PROJECT_PLAN.md lines." },
 ];
 
 export function featureCatalog(): FeatureDescriptor[] {

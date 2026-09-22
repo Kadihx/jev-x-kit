@@ -71,6 +71,8 @@ try {
     "jev_scope_judge",
     "jev_marketing_triage",
     "jev_competitor_matrix",
+    "jev_jarvis_triage",
+    "jev_jarvis_auto_plan",
   ]) {
     check(`tool registered: ${required}`, names.includes(required));
   }
@@ -220,7 +222,7 @@ try {
   });
   check("pr gate blocks secret + breaking change", pr.verdict === "block");
   const features = await call("jev_features");
-  check("feature catalog has 25 items", features.features.length === 25);
+  check("feature catalog has 27 items", features.features.length === 27);
 
   // 12b) RLJF reward, ScopeJudge, marketing copilot, competitor matrix (fully offline)
   const rljf = await call("jev_rljf_reward", {
@@ -275,6 +277,16 @@ try {
   check("competitor matrix scores every dimension", compMatrix.dimensions.length >= 5);
   check("competitor matrix computes gaps", compMatrix.cells.length === compMatrix.dimensions.length);
   check("competitor matrix ranks top gaps/advantages", compMatrix.topGaps.length >= 1 && compMatrix.topAdvantages.length >= 1);
+
+  const triaged = await call("jev_jarvis_triage", { input: "turn off the living room lights" });
+  check("jarvis triage returns a valid route", ["local", "system2"].includes(triaged.route));
+  check("jarvis triage picks a known intent category", typeof triaged.intentCategory === "string" && triaged.intentCategory.length > 0);
+
+  const autoPlan = await call("jev_jarvis_auto_plan", {
+    logText: "- [x] wire the MCP server\n- [ ] write tests\nTODO: add docs\nfixed the build error",
+  });
+  check("jarvis auto-plan returns completed + pending arrays", Array.isArray(autoPlan.completed) && Array.isArray(autoPlan.pending));
+  check("jarvis auto-plan markdown includes a checklist", autoPlan.markdown.includes("- [ ]") || autoPlan.markdown.includes("- [x]"));
 
   // 13) Backend info self-diagnosis
   const info = await call("jev_backend_info");

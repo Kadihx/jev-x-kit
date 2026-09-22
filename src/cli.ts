@@ -78,7 +78,7 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 33 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 35 });
       return;
 
     case "calibration": {
@@ -134,6 +134,22 @@ async function main(): Promise<void> {
     case "audit":
       print(await ctx.audit.run(positionals[0] ?? process.cwd(), { preset: flags.get("preset") }));
       return;
+
+    case "jarvis-triage": {
+      const input = positionals.join(" ") || flags.get("input") || "";
+      print(await ctx.jarvisTriage.triage(input, { systemState: flags.get("state") }));
+      return;
+    }
+
+    case "jarvis-auto-plan": {
+      const file = flags.get("file");
+      const logText = file ? fs.readFileSync(file, "utf8") : (flags.get("text") ?? positionals.join(" "));
+      const report = await ctx.jarvisAutoPlan.extract(logText, { goal: flags.get("goal") });
+      const writeTo = flags.get("writeTo") ?? "PROJECT_PLAN.md";
+      fs.writeFileSync(writeTo, ctx.jarvisAutoPlan.toMarkdownLines(report, flags.get("title")).join("\n") + "\n", "utf8");
+      print({ ...report, writtenTo: writeTo });
+      return;
+    }
 
     case "skills": {
       const task = positionals.join(" ") || flags.get("task") || "";
@@ -250,7 +266,7 @@ async function main(): Promise<void> {
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills | rljf | scope-judge | marketing | competitor-matrix\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills | rljf | scope-judge | marketing | competitor-matrix | jarvis-triage | jarvis-auto-plan\n",
       );
       process.exitCode = command ? 1 : 0;
   }

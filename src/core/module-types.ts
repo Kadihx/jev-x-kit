@@ -387,6 +387,36 @@ export interface SkillMatch<T> {
   installCommand?: string[];
 }
 
+/* Module — JARVIS-style intent triage --------------------------------------- */
+
+export const JARVIS_INTENT_CATEGORIES = [
+  "system_control",
+  "media_playback",
+  "app_launch",
+  "search_query",
+  "complex_reasoning_required",
+] as const;
+export type JarvisIntentCategory = (typeof JARVIS_INTENT_CATEGORIES)[number];
+
+export interface JarvisTriageResult {
+  input: string;
+  route: "local" | "system2";
+  intentCategory: string;
+  executable: NoulResult;
+  category: ChoiceResult;
+  latencyMs: number;
+}
+
+/* Module — JARVIS-style auto-plan extraction --------------------------------- */
+
+export interface JarvisAutoPlanReport {
+  completed: string[];
+  pending: Array<{ text: string; priority: ScoreResult }>;
+  source: "llm" | "offline-fallback";
+  compaction: { bytesIn: number; bytesOut: number; keptLines: number };
+  latencyMs: number;
+}
+
 export interface SkillRouterReport {
   task: string;
   zone: "execute" | "speculative";

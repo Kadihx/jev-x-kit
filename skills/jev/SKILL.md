@@ -25,6 +25,8 @@ micro-decisions run through schema-validated primitives instead of free text.
 | Guardrail an agent action against its allowed scope | `scope-judge --intent "<intent>" --action "<action>" --rules "rule1\|rule2"` |
 | Triage ad copy variants or a sales-call transcript | `marketing --mode ad_copy --variants "v1\|v2"` / `--mode sales_call --transcript "<chunk>"` |
 | Score us vs competitors across derived dimensions | `competitor-matrix --file <json with {ourProductDescription, competitorTexts}>` |
+| Route a command-bar/voice/chatbot request local vs System-2 | `jarvis-triage "<request>" [--state "<context>"]` |
+| Extract a PROJECT_PLAN.md checklist from an agent chat log | `jarvis-auto-plan --file <log path> [--goal "<focus>"] [--writeTo PROJECT_PLAN.md]` |
 
 Run `node dist/cli.js features` for the full feature catalog and
 `node dist/cli.js info` to see which backend (local LLM / heuristic) is active.

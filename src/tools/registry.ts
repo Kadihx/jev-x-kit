@@ -28,6 +28,8 @@ import { RljfReward } from "../modules/rljf-reward.js";
 import { ScopeJudge } from "../modules/scope-judge.js";
 import { MarketingCopilot, type MarketingTriageInput } from "../modules/marketing-copilot.js";
 import { CompetitorIntelligence } from "../modules/competitor-intelligence.js";
+import { JarvisIntentTriage } from "../modules/jarvis-intent-triage.js";
+import { JarvisAutoPlan } from "../modules/jarvis-plan-extractor.js";
 import type { CalibrationCase, TranscriptMessage } from "../core/module-types.js";
 import {
   edgeCases,
@@ -63,6 +65,8 @@ export interface AppContext {
   scopeJudge: ScopeJudge;
   marketingCopilot: MarketingCopilot;
   competitorIntelligence: CompetitorIntelligence;
+  jarvisTriage: JarvisIntentTriage;
+  jarvisAutoPlan: JarvisAutoPlan;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -70,6 +74,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
   const llm = new System2Client(config.llm);
   const backend = resolved.backend;
   log.info(`backend: ${backend.meta.id} (${resolved.chain.join(" -> ")})`);
+  const compactor = new ContextCompactor({ backend, concurrency: config.concurrency });
 
   return {
     config,
@@ -87,7 +92,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
       twitterBearer: config.searchKeys.twitter,
       concurrency: config.concurrency,
     }),
-    compactor: new ContextCompactor({ backend, concurrency: config.concurrency }),
+    compactor,
     miner: new GithubMiner({ backend, llm, githubToken: config.githubToken }),
     training: new JevTrainingKit({ backend, concurrency: config.concurrency }),
     improver: new SelfImprover({ memoryPath: config.memoryPath }),
@@ -99,6 +104,8 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     scopeJudge: new ScopeJudge({ backend }),
     marketingCopilot: new MarketingCopilot({ backend }),
     competitorIntelligence: new CompetitorIntelligence({ backend, llm }),
+    jarvisTriage: new JarvisIntentTriage({ backend }),
+    jarvisAutoPlan: new JarvisAutoPlan({ backend, llm, compactor }),
   };
 }
 
@@ -872,6 +879,40 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
         str(args, "ourProductDescription"),
         (args["competitorTexts"] as Record<string, string> | undefined) ?? {},
       ),
+  });
+
+  tools.push({
+    name: "jev_jarvis_triage",
+    title: "JARVIS-style intent triage",
+    description:
+      "Ultra-fast front door for a command-bar/voice-assistant/chatbot surface: one Noul + one Choice fan-out call decides whether a request is directly executable (route: local, $0) or needs a full System-2 LLM turn (route: system2). Same BELKİ gatekeeper zone semantics as jev_decide, specialized to a fixed JARVIS intent taxonomy.",
+    inputSchema: schema(
+      {
+        input: stringProp("The raw user request/command."),
+        systemState: stringProp("Optional verbatim system/app state context."),
+      },
+      ["input"],
+    ),
+    handler: async (args) => ctx.jarvisTriage.triage(str(args, "input"), { systemState: optStr(args, "systemState") }),
+  });
+
+  tools.push({
+    name: "jev_jarvis_auto_plan",
+    title: "Auto-extract a PROJECT_PLAN.md from an agent chat/tool log",
+    description:
+      "Winnow-compacts a raw agent log, then extracts completed vs pending tasks (System-2 LLM call with a deterministic offline fallback) and prioritizes pending tasks with one batched Score pass. Returns the structured report plus ready-to-write markdown lines; never writes to disk itself.",
+    inputSchema: schema(
+      {
+        logText: stringProp("Raw log/transcript text to extract a plan from."),
+        goal: stringProp("Optional focus for the Winnow compaction pass."),
+        title: stringProp("Optional heading for the generated markdown (default 'Project Plan')."),
+      },
+      ["logText"],
+    ),
+    handler: async (args) => {
+      const report = await ctx.jarvisAutoPlan.extract(str(args, "logText"), { goal: optStr(args, "goal") });
+      return { ...report, markdown: ctx.jarvisAutoPlan.toMarkdownLines(report, optStr(args, "title")).join("\n") };
+    },
   });
 
   tools.push({
