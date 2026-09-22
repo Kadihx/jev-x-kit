@@ -396,3 +396,97 @@ export interface SkillRouterReport {
   usedRemoteCatalog: boolean;
   latencyMs: number;
 }
+
+/* Module — RLJF reward (TRL/GRPO-compatible) --------------------------------- */
+
+export interface RljfRewardCell {
+  promptIndex: number;
+  completionIndex: number;
+  reward: number;
+  normalizedHelpfulness: number;
+  toxicityProbability: number;
+  helpfulness: ScoreResult;
+  toxicity: NoulResult;
+}
+
+export interface RljfRewardReport {
+  backend: string;
+  /** rewards[promptIndex][completionIndex], matching the input shape. */
+  rewards: number[][];
+  cells: RljfRewardCell[];
+  totalLatencyMs: number;
+  costUsd: number;
+  scriptFile: string | null;
+}
+
+/* Module — ScopeJudge guardrail ---------------------------------------------- */
+
+export interface ScopeJudgeChecks {
+  isScopeViolation: NoulResult;
+  isIrreversible: NoulResult;
+  isCredentialLeak: NoulResult;
+}
+
+export interface ScopeJudgeVerdict {
+  verdict: "allow" | "ask_human" | "block";
+  riskConfidence: number;
+  reason: string;
+  checks: ScopeJudgeChecks;
+}
+
+/* Module — Marketing copilot (ad copy + sales-call triage) ------------------- */
+
+export interface AdCopyItemReport {
+  variant: string;
+  index: number;
+  hookStrength: ScoreResult;
+  clarity: ScoreResult;
+  emotionalResonance: ScoreResult;
+  primaryTrigger: ChoiceResult;
+  recommendation: string;
+}
+
+export interface AdCopyReport {
+  mode: "ad_copy";
+  items: AdCopyItemReport[];
+  latencyMs: number;
+}
+
+export interface SalesCallReport {
+  mode: "sales_call";
+  transcriptChunk: string;
+  objectionType: ChoiceResult;
+  buyingSignalPresent: NoulResult;
+  recommendation: string;
+  latencyMs: number;
+}
+
+export type MarketingTriageReport = AdCopyReport | SalesCallReport;
+
+/* Module — Competitor intelligence matrix ------------------------------------ */
+
+export interface CompetitorMatrixCell {
+  competitor: string;
+  dimension: string;
+  ourScore: ScoreResult;
+  competitorScore: ScoreResult;
+  gap: number;
+}
+
+export interface CompetitorMatrixHighlight extends CompetitorMatrixCell {
+  reason: string;
+}
+
+export interface CompetitorMatrixReport {
+  dimensions: string[];
+  dimensionsSource: "llm" | "offline-fallback";
+  ourProductDescription: string;
+  matrix: {
+    ourScores: Array<{ dimension: string; score: ScoreResult }>;
+    competitors: Array<{ competitor: string; scores: Array<{ dimension: string; score: ScoreResult }> }>;
+  };
+  cells: CompetitorMatrixCell[];
+  topGaps: CompetitorMatrixHighlight[];
+  topAdvantages: CompetitorMatrixHighlight[];
+  latencyMs: number;
+}
