@@ -106,7 +106,7 @@ export default function Home() {
       <section className="dot-bg relative overflow-hidden border-b border-ink/15 bg-pink-300 px-5 py-24 text-ink">
         <CornerFrame />
         <div className="mx-auto flex max-w-5xl flex-col items-start gap-6">
-          <span className="tag-pill bg-paper font-bold">v0.1.0 · MIT · 28 MCP tools</span>
+          <span className="tag-pill bg-paper font-bold">v0.1.0 · MIT · 33 MCP tools</span>
           <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight md:text-7xl">
             Your agent doesn&apos;t need
             <br />
@@ -275,7 +275,7 @@ export default function Home() {
     "laya_local @ http://localhost:8000/v1",
     "selected: typesafe_jev"
   ],
-  "tools": 28
+  "tools": 33
 }`}
             </TerminalCard>
             <TerminalCard label="bash — jev decide">
@@ -315,14 +315,14 @@ export default function Home() {
 {`git clone https://github.com/Kadihx/jev-x-kit.git
 cd jev-x-kit && npm install && npm run build
 
-npm test            # 27 unit tests, offline simulator
-npm run smoke       # 50-check end-to-end MCP client test`}
+npm test            # 43 unit tests, offline simulator
+npm run smoke       # 69-check end-to-end MCP client test`}
           </TerminalCard>
 
           <p className="mt-8 text-sm leading-relaxed text-ink/70">
             <code>.claude-plugin/plugin.json</code> is already wired up — it
             registers the <code>jev</code> skill and the{" "}
-            <code>jev-super-agent</code> MCP server with 28 tools. Point Claude
+            <code>jev-super-agent</code> MCP server with 33 tools. Point Claude
             Code, Cursor, OpenCode or Continue.dev at this folder as a plugin, or
             hand-wire the MCP config yourself:
           </p>
@@ -381,7 +381,7 @@ npm run smoke       # 50-check end-to-end MCP client test`}
           </div>
 
           <h3 className="mt-16 font-display text-2xl font-bold tracking-tight">
-            MCP tools — 28 total, highlights below
+            MCP tools — 33 total, highlights below
           </h3>
           <div className="win-shadow mt-6 overflow-x-auto border border-ink/80 bg-paper">
             <table className="w-full min-w-[560px] text-left text-xs">
@@ -475,6 +475,79 @@ npm run smoke       # 50-check end-to-end MCP client test`}
               rel="noreferrer"
             >
               BENCHMARK.md
+            </a>
+            .
+          </p>
+        </div>
+      </section>
+
+      {/* BACKEND BENCHMARK */}
+      <section id="backend-benchmark" className="border-b border-ink/15 bg-paper px-5 py-24">
+        <div className="mx-auto max-w-5xl">
+          <span className="tag-pill font-bold">benchmark</span>
+          <h2 className="mt-4 font-display text-4xl font-bold tracking-tight">
+            batch() vs. one-at-a-time: 4.24x
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm text-ink/70">
+            Same 10-question battery, same real <code>typesafe_jev</code>{" "}
+            backend, two ways of calling it: naive sequential calls (what a
+            raw API integration looks like without the kit) vs. jev-x-kit&apos;s
+            own <code>backend.batch()</code> (same-state questions merge into
+            one HTTP call, different-state questions run concurrently).
+          </p>
+
+          <div className="win-shadow mt-8 overflow-x-auto border border-ink/80 bg-paper">
+            <table className="w-full min-w-[640px] text-left text-xs">
+              <thead className="bg-bar text-paper">
+                <tr>
+                  <th className="px-3 py-2 font-bold">Backend</th>
+                  <th className="px-3 py-2 font-bold">Sequential (10 calls)</th>
+                  <th className="px-3 py-2 font-bold">batch() (1 call)</th>
+                  <th className="px-3 py-2 font-bold">Speedup</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["heuristic (offline, $0)", "2.69ms", "0.36ms", "7.47x"],
+                  ["typesafe_jev (real API)", "3,479ms", "821ms", "4.24x"],
+                ].map((row, i) => (
+                  <tr key={row[0]} className={i % 2 ? "bg-ink/5" : ""}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="px-3 py-2 font-mono">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="mt-6 text-sm leading-relaxed text-ink/70">
+            Also verified real vs. imaginary this session: <strong>LayA</strong>{" "}
+            turns out to really exist — an open-source, self-hosted
+            ModernBERT + RLCD decision model (
+            <a className="underline" href="https://github.com/NandhaKishorM/laya" target="_blank" rel="noreferrer">
+              github.com/NandhaKishorM/laya
+            </a>
+            ) — but it publishes no hosted endpoint, so it&apos;s not in the
+            table above until it&apos;s actually running locally. No number is
+            invented for a backend that wasn&apos;t reachable.
+          </p>
+
+          <p className="mt-4 text-[11px] leading-relaxed text-ink/50">
+            Every number here is a real local measurement against the live
+            TypeSafe Jev API, not a projection. Reproduce it yourself with{" "}
+            <code>node scripts/backend-benchmark.mjs</code> (needs
+            <code> TYPESAFE_JEV_API_KEY</code> in <code>.env</code> for the
+            typesafe_jev row). Full methodology in{" "}
+            <a
+              className="underline"
+              href="https://github.com/Kadihx/jev-x-kit/blob/main/artifacts/backend-benchmark-report.md"
+              target="_blank"
+              rel="noreferrer"
+            >
+              artifacts/backend-benchmark-report.md
             </a>
             .
           </p>
