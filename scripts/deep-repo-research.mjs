@@ -107,6 +107,15 @@ const GITHUB_CATEGORIES = {
       "course scheduler app", "student task manager", "ai homework helper",
     ],
   },
+  "lunatic-10-oyun": {
+    context: "coaching replay demo analysis stats tracking training tool esports VOD review player performance",
+    topics: [
+      "valorant coaching tool", "cs2 demo analyzer", "league of legends coaching tool",
+      "dota2 replay analyzer", "overwatch 2 coaching tool", "rainbow six siege stats tool",
+      "rocket league replay analyzer", "apex legends coaching tool", "pubg stats tracker",
+      "fortnite stats tracker",
+    ],
+  },
 };
 
 const DEEP_DIVE_TOP_N = 40;
