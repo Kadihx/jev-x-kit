@@ -73,6 +73,7 @@ try {
     "jev_competitor_matrix",
     "jev_jarvis_triage",
     "jev_jarvis_auto_plan",
+    "jev_media_judge",
   ]) {
     check(`tool registered: ${required}`, names.includes(required));
   }
@@ -222,7 +223,7 @@ try {
   });
   check("pr gate blocks secret + breaking change", pr.verdict === "block");
   const features = await call("jev_features");
-  check("feature catalog has 27 items", features.features.length === 27);
+  check("feature catalog has 28 items", features.features.length === 28);
 
   // 12b) RLJF reward, ScopeJudge, marketing copilot, competitor matrix (fully offline)
   const rljf = await call("jev_rljf_reward", {
@@ -287,6 +288,13 @@ try {
   });
   check("jarvis auto-plan returns completed + pending arrays", Array.isArray(autoPlan.completed) && Array.isArray(autoPlan.pending));
   check("jarvis auto-plan markdown includes a checklist", autoPlan.markdown.includes("- [ ]") || autoPlan.markdown.includes("- [x]"));
+
+  const mediaJudged = await call("jev_media_judge", {
+    context: "CS2 clip review",
+    description: "Player clears the site methodically and wins the 1v1 clutch.",
+  });
+  check("media judge returns a rating choice", typeof mediaJudged.rating.selected === "string");
+  check("media judge returns a 1-10 score", mediaJudged.score.score >= 1 && mediaJudged.score.score <= 10);
 
   // 13) Backend info self-diagnosis
   const info = await call("jev_backend_info");

@@ -409,6 +409,16 @@ export interface JarvisTriageResult {
 
 /* Module — JARVIS-style auto-plan extraction --------------------------------- */
 
+/* Module — Media judge (decoupled vision + calibrated decision) --------------- */
+
+export interface MediaJudgeResult {
+  context: string;
+  description: string;
+  rating: ChoiceResult;
+  score: ScoreResult;
+  latencyMs: number;
+}
+
 export interface JarvisAutoPlanReport {
   completed: string[];
   pending: Array<{ text: string; priority: ScoreResult }>;

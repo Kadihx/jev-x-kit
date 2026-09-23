@@ -27,6 +27,7 @@ micro-decisions run through schema-validated primitives instead of free text.
 | Score us vs competitors across derived dimensions | `competitor-matrix --file <json with {ourProductDescription, competitorTexts}>` |
 | Route a command-bar/voice/chatbot request local vs System-2 | `jarvis-triage "<request>" [--state "<context>"]` |
 | Extract a PROJECT_PLAN.md checklist from an agent chat log | `jarvis-auto-plan --file <log path> [--goal "<focus>"] [--writeTo PROJECT_PLAN.md]` |
+| Calibrated rating from an existing vision-LLM text description | `media-judge --context "<what>" --description "<vision output>"` |
 
 Run `node dist/cli.js features` for the full feature catalog and
 `node dist/cli.js info` to see which backend (local LLM / heuristic) is active.

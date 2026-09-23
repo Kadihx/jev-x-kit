@@ -30,6 +30,7 @@ import { MarketingCopilot, type MarketingTriageInput } from "../modules/marketin
 import { CompetitorIntelligence } from "../modules/competitor-intelligence.js";
 import { JarvisIntentTriage } from "../modules/jarvis-intent-triage.js";
 import { JarvisAutoPlan } from "../modules/jarvis-plan-extractor.js";
+import { MediaJudge } from "../modules/jev-media-judge.js";
 import type { CalibrationCase, TranscriptMessage } from "../core/module-types.js";
 import {
   edgeCases,
@@ -67,6 +68,7 @@ export interface AppContext {
   competitorIntelligence: CompetitorIntelligence;
   jarvisTriage: JarvisIntentTriage;
   jarvisAutoPlan: JarvisAutoPlan;
+  mediaJudge: MediaJudge;
 }
 
 export async function createContext(config: JevConfig = loadConfig()): Promise<AppContext> {
@@ -106,6 +108,7 @@ export async function createContext(config: JevConfig = loadConfig()): Promise<A
     competitorIntelligence: new CompetitorIntelligence({ backend, llm }),
     jarvisTriage: new JarvisIntentTriage({ backend }),
     jarvisAutoPlan: new JarvisAutoPlan({ backend, llm, compactor }),
+    mediaJudge: new MediaJudge({ backend }),
   };
 }
 
@@ -913,6 +916,27 @@ export function buildTools(ctx: AppContext): ToolSpec[] {
       const report = await ctx.jarvisAutoPlan.extract(str(args, "logText"), { goal: optStr(args, "goal") });
       return { ...report, markdown: ctx.jarvisAutoPlan.toMarkdownLines(report, optStr(args, "title")).join("\n") };
     },
+  });
+
+  tools.push({
+    name: "jev_media_judge",
+    title: "Calibrated media judgment (decoupled from vision)",
+    description:
+      "Takes a TEXT description of a video/image/clip already produced by any vision-capable LLM (Claude/Gemini/GPT vision, etc. -- this tool never sees the media itself) and independently classifies it with jev's own calibrated Choice + Score primitives, instead of trusting the vision model's self-reported rating. Use when a full multimodal model (e.g. a 25GB+ self-hosted one) isn't available, but you already have a text description from any existing vision call.",
+    inputSchema: schema(
+      {
+        context: stringProp("What's being judged and why (e.g. game name, task description)."),
+        description: stringProp("The vision LLM's text description of the media -- not the media itself."),
+        ratingOptions: arrayProp("Category options (default: good, average, bad).", { type: "string" }),
+        scoreLabel: stringProp("What the 1-10 score measures (default: 'overall skill/quality shown')."),
+      },
+      ["context", "description"],
+    ),
+    handler: async (args) =>
+      ctx.mediaJudge.judge(str(args, "context"), str(args, "description"), {
+        ratingOptions: strArray(args, "ratingOptions").length ? strArray(args, "ratingOptions") : undefined,
+        scoreLabel: optStr(args, "scoreLabel"),
+      }),
   });
 
   tools.push({

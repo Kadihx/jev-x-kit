@@ -37,6 +37,7 @@ export const FEATURES: FeatureDescriptor[] = [
   { id: 25, slug: "competitor-intelligence", name: "Competitor Intelligence Matrix", status: "implemented", tool: "jev_competitor_matrix", summary: "Scores our product and every competitor across derived dimensions in one batched pass and ranks the resulting gaps." },
   { id: 26, slug: "jarvis-triage", name: "JARVIS-style Intent Triage", status: "implemented", tool: "jev_jarvis_triage", summary: "One Noul + one Choice fan-out call routes a command-bar/voice/chatbot request local ($0) or to System-2." },
   { id: 27, slug: "jarvis-auto-plan", name: "JARVIS-style Auto-Plan Extractor", status: "implemented", tool: "jev_jarvis_auto_plan", summary: "Winnow-compacts an agent log, extracts completed/pending tasks, prioritizes pending ones, emits PROJECT_PLAN.md lines." },
+  { id: 28, slug: "media-judge", name: "Calibrated Media Judge", status: "implemented", tool: "jev_media_judge", summary: "Independently classifies a vision LLM's text description with jev's own Choice+Score, decoupled from a heavy multimodal model." },
 ];
 
 export function featureCatalog(): FeatureDescriptor[] {

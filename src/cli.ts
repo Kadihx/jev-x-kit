@@ -78,7 +78,7 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "info":
-      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 35 });
+      print({ backend: ctx.resolved.backend.meta, chain: ctx.resolved.chain, tools: 36 });
       return;
 
     case "calibration": {
@@ -149,6 +149,16 @@ async function main(): Promise<void> {
       const writeTo = flags.get("writeTo") ?? "PROJECT_PLAN.md";
       fs.writeFileSync(writeTo, ctx.jarvisAutoPlan.toMarkdownLines(report, flags.get("title")).join("\n") + "\n", "utf8");
       print({ ...report, writtenTo: writeTo });
+      return;
+    }
+
+    case "media-judge": {
+      print(
+        await ctx.mediaJudge.judge(flags.get("context") ?? "", flags.get("description") ?? positionals.join(" "), {
+          ratingOptions: flags.get("options")?.split(","),
+          scoreLabel: flags.get("scoreLabel"),
+        }),
+      );
       return;
     }
 
@@ -267,7 +277,7 @@ async function main(): Promise<void> {
     default:
       process.stderr.write(
         "jev-super-agent-mcp CLI\n" +
-          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills | rljf | scope-judge | marketing | competitor-matrix | jarvis-triage | jarvis-auto-plan\n",
+          "commands: info | decide | compact | audit | verify | label | guardrail | plan | redteam | memory | features | competitors | calibration | skills | rljf | scope-judge | marketing | competitor-matrix | jarvis-triage | jarvis-auto-plan | media-judge\n",
       );
       process.exitCode = command ? 1 : 0;
   }
