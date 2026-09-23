@@ -108,12 +108,21 @@ const GITHUB_CATEGORIES = {
     ],
   },
   "lunatic-10-oyun": {
+    // Dar/tek sorgu ("apex legends coaching tool") çoğu oyun için 0 sonuç verdi.
+    // Burak'ın talimatı: oyun adının kendisi + türetilmiş varyasyonlarla (esports,
+    // tool, stats) geniş ve sürekli arama yap, tek bir dar ifadeye güvenme.
     context: "coaching replay demo analysis stats tracking training tool esports VOD review player performance",
     topics: [
-      "valorant coaching tool", "cs2 demo analyzer", "league of legends coaching tool",
-      "dota2 replay analyzer", "overwatch 2 coaching tool", "rainbow six siege stats tool",
-      "rocket league replay analyzer", "apex legends coaching tool", "pubg stats tracker",
-      "fortnite stats tracker",
+      "valorant", "valorant esports", "valorant tool", "valorant stats",
+      "cs2", "counter-strike 2", "cs2 esports", "cs2 tool",
+      "league of legends", "lol esports", "league of legends tool", "lol stats",
+      "dota2", "dota 2 esports", "dota2 tool", "dota2 stats",
+      "overwatch 2", "overwatch 2 esports", "overwatch tool", "overwatch stats",
+      "rainbow six siege", "r6 esports", "siege tool", "r6 stats",
+      "rocket league", "rocket league esports", "rocket league tool", "rocket league stats",
+      "apex legends", "apex esports", "apex tool", "apex stats",
+      "pubg", "pubg esports", "pubg tool", "pubg stats",
+      "fortnite", "fortnite esports", "fortnite tool", "fortnite stats",
     ],
   },
 };
