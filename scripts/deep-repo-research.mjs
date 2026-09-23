@@ -69,6 +69,18 @@ function tokenOverlap(topicContext, text) {
   return inter / Math.min(a.size, b.size);
 }
 
+// 2026-09-23: found (and unstarred) 15 real cheat/malware-distribution repos
+// that the heuristic Score gave 10/10 "usefulness" to (fake "analytics toolkit"
+// descriptions hiding a base64 README with an external "DOWNLOAD" link — the
+// classic fake-cheat malware bait pattern). The heuristic backend has no real
+// understanding of this, so never trust it alone for what gets starred on a
+// real account -- a cheap deterministic denylist runs first, unconditionally.
+const CHEAT_MALWARE_PATTERN = /\b(?:hack|cheat|aimbot|wallhack|\besp\b|spoofer|nuker|bypass|crack(?:ed)?)\b/i;
+
+function looksLikeCheatOrMalware(fullName, description) {
+  return CHEAT_MALWARE_PATTERN.test(fullName) || CHEAT_MALWARE_PATTERN.test(description ?? "");
+}
+
 async function starRepo(fullName) {
   try {
     await execFileAsync("gh", ["api", "-X", "PUT", `user/starred/${fullName}`]);
@@ -198,7 +210,10 @@ async function runGithubPhase(backend, githubToken) {
       for (const c of toDeepen) {
         if (pastDeadline()) break;
         const result = await deepDive(backend, context, c, githubToken);
-        if (result.readmeFound && result.usefulness >= VERIFIED_MIN_USEFULNESS) {
+        if (looksLikeCheatOrMalware(result.fullName, result.description)) {
+          result.starred = false;
+          result.blockedAsSuspicious = true;
+        } else if (result.readmeFound && result.usefulness >= VERIFIED_MIN_USEFULNESS) {
           const ok = await starRepo(result.fullName);
           result.starred = ok;
           if (ok) starred++;
