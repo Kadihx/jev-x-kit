@@ -1,0 +1,22 @@
+{
+  "games": {
+    "Valorant":        { "names": ["valorant"] },
+    "CS2":             { "names": ["cs2", "counter-strike 2"] },
+    "LoL":             { "names": ["league of legends", "lol"] },
+    "Rocket League":   { "names": ["rocket league"] },
+    "Brawl Stars":     { "names": ["brawl stars"] },
+    "PUBG Mobile":     { "names": ["pubg mobile"] },
+    "PUBG PC":         { "names": ["pubg"] },
+    "Mobile Legends":  { "names": ["mobile legends"] },
+    "TFT":             { "names": ["teamfight tactics", "tft"] },
+    "Fortnite":        { "names": ["fortnite"] }
+  },
+  "keywords": ["", "aim", "coach", "training", "tactic", "strategy", "stats", "tracker", "overlay", "analysis", "replay", "crosshair"],
+  "bestMatchPages": 20,
+  "perPage": 10,
+  "recentMonths": 2,
+  "updateWindowHours": 12,
+  "maxRepoSizeKB": 51200,
+  "maxRecentPages": 100,
+  "dupThreshold": 0.8
+}
